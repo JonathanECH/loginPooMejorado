@@ -1,22 +1,59 @@
+<?php 
+session_start(); 
+
+// Recuperar datos del formulario y errores
+$errors = $_SESSION['errors'] ?? [];
+$form_data = $_SESSION['form_data'] ?? ['nombre' => '', 'email' => ''];
+
+// Limpiar la sesión después de recuperarlos
+unset($_SESSION['errors']); 
+unset($_SESSION['form_data']); 
+?>
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../styles/css/globalStyles.css" />
+  <link rel="stylesheet" href="../styles/css/formDefaultStyles.css" />
+  <title>Document</title>
+</head>
+
+<body>
+  <?php if (!empty($errors)): ?>
+    <div style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 20px;">
+      <p>**Se encontraron los siguientes errores:**</p>
+      <ul>
+        <?php foreach ($errors as $error): ?>
+          <li><?php echo htmlspecialchars($error); ?></li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+  <?php endif; ?>
+  <form action="/loginPooMejorado/src/php/CRUD/crear.php" method="post">
     <h2>Registro de usuario</h2>
-    <form action="/loginPooMejorado/src/php/CRUD/crear.php" method="post">
-      <label>Nombre:</label>
-      <input type="text" name="nombre" required /><br />
-      <label>Email:</label>
-      <input type="email" name="email" required /><br />
-      <label>Contraseña:</label>
-      <input type="password" name="password" required /><br />
-      <label>Confirmar contraseña:</label>
-      <input type="password" name="confirmPassword" required />
-      <button type="submit">Ingresar</button>
-    </form>
-  </body>
+    <a href="/loginPooMejorado/src/views/login.php">Ya tienes una cuenta?, inicia sesión</a>
+    <section>
+        <label>Nombre:</label>
+        <input type="text" name="nombre" value="<?php echo htmlspecialchars($form_data['nombre']); ?>" required />
+    </section>
+    <section>
+        <label>Email:</label>
+        <input type="email" name="email" value="<?php echo htmlspecialchars($form_data['email']); ?>" required />
+    </section>
+    
+    <section>
+        <label>Contraseña:</label>
+        <input type="password" name="password" required />
+    </section>
+    <section>
+        <label>Confirmar contraseña:</label>
+        <input type="password" name="confirmPassword" required />
+    </section>
+    <button type="submit">Ingresar</button>
+</form>
+</body>
+
 </html>

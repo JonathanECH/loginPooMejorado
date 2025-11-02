@@ -21,9 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         // Fracaso: (Aquí puedes redirigir al login.html con un mensaje de error)
         $_SESSION['error_login'] = "Usuario o contraseña incorrectos. Por favor, intente de nuevo.";
-
-        // ✅ Redirigir a la página de login (que ahora es login.php)
-        // La ruta correcta desde src/php/services/ a src/views/login.php es:
+        // Redirigir a la pagina de login
         header("Location: ../../views/login.php");
         exit;
     }

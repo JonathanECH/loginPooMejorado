@@ -21,20 +21,28 @@ if (isset($_SESSION['error_login'])) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../styles/css/globalStyles.css">
+  <link rel="stylesheet" href="../styles/css/formDefaultStyles.css">
   <title>Document</title>
 </head>
 
 <body>
-  <h2>Iniciar Sesión</h2>
   <?php if ($error_message): ?>
-    <p style="color: red; font-weight: bold; border: 1px solid red; padding: 10px;"><?php echo htmlspecialchars($error_message); ?></p>
+    <p style="color: red; font-weight: bold; border: 1px solid red; padding: 10px;">
+      <?php echo htmlspecialchars($error_message); ?>
+    </p>
   <?php endif; ?>
-  <a href="/loginPooMejorado/src/views/register.php">No tienes cuenta?, crea una.</a>
-  <form action="../php/services/loginService.php" method="post">
-    <label>Email:</label>
-    <input type="email" name="email" required /><br />
-    <label>Contraseña:</label>
-    <input type="password" name="password" required /><br />
+  <form action="../php/services/formDefaultStyles.css" method="post">
+    <h2>Iniciar Sesión</h2>
+    <a href="/loginPooMejorado/src/views/register.php">No tienes cuenta?, crea una.</a>
+    <section>
+      <label>Email:</label>
+      <input type="email" name="email" required />
+    </section>
+    <section>
+      <label>Contraseña:</label>
+      <input type="password" name="password" required />
+    </section>
     <button type="submit">Ingresar</button>
   </form>
 </body>
