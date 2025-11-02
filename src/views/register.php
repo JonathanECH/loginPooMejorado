@@ -1,5 +1,11 @@
 <?php 
 session_start(); 
+require_once '../php/classes/user.php';
+
+if (isset($_SESSION['user_id'])) {
+  header("Location: dashboard.php");
+  exit;
+}
 
 // Recuperar datos del formulario y errores
 $errors = $_SESSION['errors'] ?? [];

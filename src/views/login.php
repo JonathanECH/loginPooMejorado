@@ -32,7 +32,7 @@ if (isset($_SESSION['error_login'])) {
       <?php echo htmlspecialchars($error_message); ?>
     </p>
   <?php endif; ?>
-  <form action="../php/services/formDefaultStyles.css" method="post">
+  <form action="../php/services/loginService.php" method="post">
     <h2>Iniciar Sesión</h2>
     <a href="/loginPooMejorado/src/views/register.php">No tienes cuenta?, crea una.</a>
     <section>
