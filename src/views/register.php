@@ -24,13 +24,13 @@ unset($_SESSION['form_data']);
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../styles/css/globalStyles.css" />
   <link rel="stylesheet" href="../styles/css/formDefaultStyles.css" />
-  <title>Document</title>
+  <title>Register User</title>
 </head>
 
 <body>
   <?php if (!empty($errors)): ?>
     <div style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 20px;">
-      <p>**Se encontraron los siguientes errores:**</p>
+      <p class="errorMsg">**Se encontraron los siguientes errores:**</p>
       <ul>
         <?php foreach ($errors as $error): ?>
           <li><?php echo htmlspecialchars($error); ?></li>

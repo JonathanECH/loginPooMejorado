@@ -23,12 +23,12 @@ if (isset($_SESSION['error_login'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../styles/css/globalStyles.css">
   <link rel="stylesheet" href="../styles/css/formDefaultStyles.css">
-  <title>Document</title>
+  <title>Login</title>
 </head>
 
 <body>
   <?php if ($error_message): ?>
-    <p style="color: red; font-weight: bold; border: 1px solid red; padding: 10px;">
+    <p class="errorMsg">
       <?php echo htmlspecialchars($error_message); ?>
     </p>
   <?php endif; ?>

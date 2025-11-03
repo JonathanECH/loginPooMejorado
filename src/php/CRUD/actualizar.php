@@ -1,11 +1,19 @@
 <?php
 // src/php/actualizar.php (Controlador refactorizado)
+
+// Traigo la sesión con los datos del usuario
 session_start();
-require_once '../classes/user.php'; 
+require_once '../classes/user.php';
 
 // 1. Guardia de seguridad
+//Si no hay una sección, detengo la ejecución
 if (!isset($_SESSION['user_id'])) {
-    die("Acceso denegado. Debes iniciar sesión.");
+    //Mando un mensaje de error por acceso no autorizado
+    $_SESSION['error_login'] = "Acceso denegado. Debes iniciar sesión para actualizar tu perfil.";
+
+    //Reedirigir a la pagina de login
+    header("Location: ../../views/login.php");
+    exit;
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -23,9 +31,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['usuario'] = $nombre;
         header("Location: ../../views/dashboard.php?update=success");
         exit;
-    } else {
-        // Fracaso: Muestra el error devuelto por el modelo
-        die($result); 
     }
+    
+    // Fracaso: Muestra el error devuelto por el modelo
+    $_SESSION['update_error'] = $result;
+    header("Location: ../../views/dashboard.php?update=fail");
+    exit;
 }
-?>

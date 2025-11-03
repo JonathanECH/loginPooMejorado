@@ -15,14 +15,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($loginData !== false) {
         // Éxito: Iniciar sesión y redirigir
         $_SESSION['usuario'] = $loginData['usuario'];
+        //Guardo el id del usuario para futuras consultas
         $_SESSION['user_id'] = $loginData['user_id'];
         header("Location: ../../views/dashboard.php");
         exit;
-    } else {
-        // Fracaso: (Aquí puedes redirigir al login.html con un mensaje de error)
-        $_SESSION['error_login'] = "Correo o contraseña incorrectos. Por favor, intente de nuevo.";
-        // Redirigir a la pagina de login
-        header("Location: ../../views/login.php");
-        exit;
     }
+
+    
+    // Fracaso: (Aquí puedes redirigir al login.html con un mensaje de error)
+    $_SESSION['error_login'] = "Correo o contraseña incorrectos. Por favor, intente de nuevo.";
+    // Redirigir a la pagina de login
+    header("Location: ../../views/login.php");
+    exit;
 }

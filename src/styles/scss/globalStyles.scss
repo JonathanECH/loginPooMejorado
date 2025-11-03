@@ -8,3 +8,12 @@
   font-weight: 400;
   font-style: normal;
 }
+
+body {
+  .errorMsg {
+    color: red;
+    font-weight: bold;
+    border: 1px solid red;
+    padding: 10px;
+  }
+}

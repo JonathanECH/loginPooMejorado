@@ -13,9 +13,8 @@ class Database
         $this->conn = new mysqli($this->host, $this->user, $this->pass, $this->dbName);
 
         // Verifica la conexión
-        if ($this->conn->connect_error) {
+        if ($this->conn->connect_error) 
             die("Conexión Fallida: " . $this->conn->connect_error);
-        }
     }
 
     // Método para obtener la conexión y usarla en otras clases
