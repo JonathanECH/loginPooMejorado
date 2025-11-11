@@ -15,17 +15,26 @@ document.addEventListener("DOMContentLoaded", function () {
     isActive = false;
   });
 
+  //EVENTO  DE CAMBIO DE TAMAÑO DE VENTANA
+  window.addEventListener("resize", function () {
+    console.log("resize");
+    if (isActive) {
+      cerrarMenuConAnimacion();
+      isActive = false;
+    }
+  });
+
   //FUNCIONES DE CONFIGURACIÓN Y CIERRE DEL MENÚ
   function configurarMenu(btnText, menuDisplay, menuRight) {
     mobileMenuBtn.innerHTML = btnText;
     mobileMenu.style.display = menuDisplay;
     requestAnimationFrame(() => {
-      mobileMenu.style.right = menuRight; 
+      mobileMenu.style.right = menuRight;
     });
   }
   function cerrarMenuConAnimacion() {
     mobileMenuBtn.innerHTML = "☰";
-    mobileMenu.style.right = "100%"; 
+    mobileMenu.style.right = "100%";
 
     const handleTransitionEnd = () => {
       mobileMenu.style.display = "none";
@@ -34,5 +43,3 @@ document.addEventListener("DOMContentLoaded", function () {
     mobileMenu.addEventListener("transitionend", handleTransitionEnd);
   }
 });
-
-

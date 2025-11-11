@@ -40,12 +40,32 @@ if (isset($_SESSION['update_error'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../styles/css/globalStyles.css" />
   <link rel="stylesheet" href="../styles/css/formDefaultStyles.css" />
+  <link rel="stylesheet" href="../styles/css/userMenuHeader.css">
   <title>Dashboard</title>
 </head>
 
 <body>
+  <header>
+    <img src="../images/lubriken-log-o-type.png" alt="logotype" />
+    <nav class="desktop-menu">
+      <ul>
+        <li>Inicio</li>
+        <li>Sobre nosotros</li>
+        <li>Nuestros Productos</li>
+        <li>Iniciar Sesión</li>
+      </ul>
+    </nav>
+    <nav id="mobile-menu">
+      <ul>
+        <li>Inicio</li>
+        <li>Sobre nosotros</li>
+        <li>Nuestros Productos</li>
+        <li>Iniciar Sesión</li>
+      </ul>
+    </nav>
+    <button id="mobile-menu-btn">☰</button>
+  </header>
   <h2>¡Bienvenido, <?php echo $nombre_actual; ?>!</h2>
-
   <h3>Tus Datos Actuales</h3>
   <p>Nombre: <?php echo $nombre_actual; ?></p>
   <p>Email: <?php echo $email_actual; ?></p>
@@ -66,6 +86,8 @@ if (isset($_SESSION['update_error'])) {
   </form>
   <form action="../php/services/logoff.php" method="post">
     <button type="submit">Cerrar Sesión</button>
+  </form>
+  <script src="../js/header-component.js"></script>
 </body>
 
 </html>

@@ -7,6 +7,7 @@
 }
 
 header {
+  z-index: 1000;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -84,6 +85,7 @@ header .desktop-menu ul li:hover {
     -webkit-transition: right 0.3s ease-in-out;
     transition: right 0.3s ease-in-out;
     background-color: var(--ternary-color);
+    z-index: 999;
   }
   header #mobile-menu ul {
     display: -webkit-box;
@@ -99,9 +101,14 @@ header .desktop-menu ul li:hover {
     padding-left: 1em;
     padding-bottom: 4em;
     list-style: none;
+    gap: 10px;
   }
   header #mobile-menu ul li {
     font-size: 1.5rem;
+  }
+  header #mobile-menu ul li:hover {
+    background-color: var(--secondary-color);
+    border-radius: 5px;
   }
   header #mobile-menu-btn {
     all: unset;
@@ -127,6 +134,8 @@ header .desktop-menu ul li:hover {
 }
 @media (680px <= width < 800px) {
   header {
+    position: sticky;
+    bottom: 100%;
     width: 100%;
     -webkit-box-pack: justify;
         -ms-flex-pack: justify;
@@ -163,6 +172,8 @@ header .desktop-menu ul li:hover {
 }
 @media (width >= 800px) {
   header {
+    position: sticky;
+    bottom: 100%;
     width: 100%;
     -webkit-box-pack: justify;
         -ms-flex-pack: justify;
