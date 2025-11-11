@@ -47,7 +47,7 @@ header .desktop-menu ul li:hover {
   background-color: var(--secondary-color);
 }
 
-@media (width < 805px) {
+@media (width < 680px) {
   header {
     position: fixed;
     bottom: 2%;
@@ -125,7 +125,43 @@ header .desktop-menu ul li:hover {
     z-index: 1000;
   }
 }
-@media (width >= 805px) {
+@media (680px <= width < 800px) {
+  header {
+    width: 100%;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    padding-right: 0.25rem;
+    padding-left: 0.25rem;
+  }
+  header #mobile-menu {
+    display: none;
+  }
+  header #mobile-menu-btn {
+    display: none;
+  }
+  header .desktop-menu ul {
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-flow: row nowrap;
+            flex-flow: row nowrap;
+    gap: 3px;
+  }
+  header .desktop-menu ul li {
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    height: 100%;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid transparent;
+    border-radius: 15px 15px 0 0;
+    font-size: 0.9rem;
+  }
+}
+@media (width >= 800px) {
   header {
     width: 100%;
     -webkit-box-pack: justify;
