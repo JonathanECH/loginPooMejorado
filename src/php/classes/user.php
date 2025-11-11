@@ -80,9 +80,9 @@ class User
         $sql = "SELECT nombre, email FROM usuarios WHERE id = ?";
         $result = $this->runSelectStatement($sql, "i", $id);
 
-        if ($result && $result->num_rows === 1) {
+        if ($result && $result->num_rows === 1) 
             return $result->fetch_assoc();
-        }
+        
         return false;
     }
 
@@ -103,9 +103,8 @@ class User
             return true;
 
         // 3. Manejo de error específico (1062 - Duplicado)
-        if ($result === 1062) {
+        if ($result === 1062) 
             return "Error: El correo electrónico ya está registrado.";
-        }
 
         // 4. Fallo genérico (cubre cualquier otro error, incluyendo el 'false' de la preparación)
         return "Error al registrar usuario. Inténtelo de nuevo más tarde.";

@@ -24,6 +24,7 @@ unset($_SESSION['form_data']);
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../styles/css/globalStyles.css" />
   <link rel="stylesheet" href="../styles/css/formDefaultStyles.css" />
+  <link rel="stylesheet" href="../styles/css/formBackgrouns.css">
   <title>Register User</title>
 </head>
 
