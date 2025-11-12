@@ -2,10 +2,10 @@
 session_start();
 require_once '../php/classes/user.php';
 
-if (isset($_SESSION['user_id'])) {
-  header("Location: dashboard.php");
-  exit;
-}
+// if (isset($_SESSION['user_id'])) {
+//   header("Location: dashboard.php");
+//   exit;
+// }
 
 $error_message = null;
 if (isset($_SESSION['error_login'])) {

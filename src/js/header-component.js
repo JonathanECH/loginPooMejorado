@@ -1,7 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
   const mobileMenuBtn = document.getElementById("mobile-menu-btn");
   const mobileMenu = document.getElementById("mobile-menu");
+  const desktopMenu = document.getElementById("desktop-menu");
+  const menuMobileLists = mobileMenu.getElementsByTagName("li");
   let isActive = false;
+
+  // CLICK DE LOS ÍTEMS DEL MENÚ MÓVIL
+  for (let i = 0; i < menuMobileLists.length; i++) {
+    menuMobileLists[i].addEventListener("click", function () {
+      cerrarMenuConAnimacion();
+      isActive = false;
+    });
+  }
 
   // CLICK DEL BOTÓN DEL MENÚ MÓVIL
   mobileMenuBtn.addEventListener("click", function () {

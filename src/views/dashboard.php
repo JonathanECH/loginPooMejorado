@@ -39,8 +39,10 @@ if (isset($_SESSION['update_error'])) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../styles/css/globalStyles.css" />
-  <link rel="stylesheet" href="../styles/css/formDefaultStyles.css" />
   <link rel="stylesheet" href="../styles/css/userMenuHeader.css">
+  <link rel="stylesheet" href="../styles/css/product.css">
+  <link rel="stylesheet" href="../styles/css/testimonials.css">
+  <link rel="stylesheet" id="sobrenosotros-style" href="../styles/css/section-sobrenosotros.css">
   <title>Dashboard</title>
 </head>
 
@@ -49,44 +51,168 @@ if (isset($_SESSION['update_error'])) {
     <img src="../images/lubriken-log-o-type.png" alt="logotype" />
     <nav class="desktop-menu">
       <ul>
-        <li>Inicio</li>
-        <li>Sobre nosotros</li>
-        <li>Nuestros Productos</li>
-        <li>Iniciar Sesión</li>
+        <li><a href="#">Inicio</a></li>
+        <li><a href="#sobrenosotros-view">Sobre nosotros</a></li>
+        <li><a href="#productos">Nuestros Productos</a></li>
+        <li><a href="#testimonios">testimonial de pasantias</a></li>
+        <li><a href="./login.php">Iniciar Sesión</a></li>
+      </ul>
       </ul>
     </nav>
     <nav id="mobile-menu">
       <ul>
-        <li>Inicio</li>
-        <li>Sobre nosotros</li>
-        <li>Nuestros Productos</li>
-        <li>Iniciar Sesión</li>
+        <li><a href="#">Inicio</a></li>
+        <li><a href="#sobrenosotros-view">Sobre nosotros</a></li>
+        <li><a href="#productos">Nuestros Productos</a></li>
+        <li><a href="#testimonios">testimonial de pasantias</a></li>
+        <li><a href="./login.php">Iniciar Sesión</a></li>
       </ul>
     </nav>
     <button id="mobile-menu-btn">☰</button>
   </header>
-  <h2>¡Bienvenido, <?php echo $nombre_actual; ?>!</h2>
-  <h3>Tus Datos Actuales</h3>
-  <p>Nombre: <?php echo $nombre_actual; ?></p>
-  <p>Email: <?php echo $email_actual; ?></p>
-  <?php if ($update_error_message): ?>
-    <p class="errorMsg"><?php echo htmlspecialchars($update_error_message); ?></p>
-  <?php endif; ?>
-  <form action="../php/CRUD/actualizar.php" method="post">
-    <h4>Modificar Perfil</h4>
-    <section>
-      <label>Nuevo Nombre:</label>
-      <input type="text" name="nombre" value="<?php echo $nombre_actual; ?>" required>
+  <main>
+    <section id="sobrenosotros-view" class="content-view content-container sobrenosotros" style="display:none;">
+      <h1 class="page-title">Conoce a Lubriken</h1>
+      <hr>
+
+      <section class="mission">
+        <h2>Nuestra Misión </h2>
+        <p>En Lubriken, nuestra misión es simplificar el mantenimiento y la protección de tus activos, ofreciendo
+          lubricantes y productos químicos de la más alta calidad.</p>
+      </section>
+
+      <section class="history">
+        <h2>Nuestra Historia </h2>
+        <p>Fundada en 2020, Lubriken nació de la necesidad de un servicio especializado y una entrega eficiente en el
+          sector industrial.</p>
+      </section>
+
+      <section class="values">
+        <h2>Nuestros Valores </h2>
+        <ul>
+          <li><strong>Calidad:</strong> Productos certificados y probados.</li>
+          <li><strong>Compromiso:</strong> Entrega rápida y atención al cliente.</li>
+          <li><strong>Innovación:</strong> Soluciones constantes.</li>
+        </ul>
+      </section>
     </section>
-    <section>
-      <label>Nuevo Email:</label>
-      <input type="email" name="email" value="<?php echo $email_actual; ?>" required>
+    <!--PRODUCTOS-->
+    <section id="productos" class="productos">
+      <h2 class="productos-title">Productos</h2>
+      <figure>
+        <img src="../images/productos/aceite para carro inca.jpg" alt="aceite para carro inca" />
+        <figcaption>Aceite para carro Inca - 1 litro</figcaption>
+        <p>Precio:20$</p>
+        <a href="#" class="btn">Comprar</a>
+        <h3 class="status available">DISPONIBLE</h3>
+      </figure>
+
+      <figure>
+        <img src="../images/productos/filtros-MHW.png" alt="filtro mhw" />
+        <figcaption>Filtros MHW</figcaption>
+        <p>Precio:15$</p>
+        <a href="#" class="btn">Comprar</a>
+        <h3 class="status available">DISPONIBLE</h3>
+      </figure>
+
+      <figure>
+        <img src="../images/productos/base con bombin para filtros.jpg" alt="base con bombin para filtros" />
+        <figcaption>Base Con Bombin Para Filtros</figcaption>
+        <p>Precio:60$</p>
+        <a href="#" class="btn">Comprar</a>
+        <h3 class="status available">DISPONIBLE</h3>
+      </figure>
+
+      <figure>
+        <img src="../images/productos/Filtros Combustible 3196.png" alt="Filtros Combustible 3196" />
+        <figcaption>Filtros Combustible 3196</figcaption>
+        <p>Precio:10$</p>
+        <a href="#" class="btn">Comprar</a>
+        <h3 class="status sold-out">AGOTADO</h3>
+      </figure>
+
+      <figure>
+        <img src="../images/productos/filtro-de-aceite-30dolares.png" alt="Filtros de aceite" />
+        <figcaption>Filtros De Aceite</figcaption>
+        <p>Precio:30$</p>
+        <a href="#" class="btn">Comprar</a>
+        <h3 class="status available">DISPONIBLE</h3>
+      </figure>
+
+      <figure>
+        <img src="../images/productos/Amortiguador Delantero Chevrolet Spark 96424026 Derecho (rh).webp"
+          alt="amortiguador" />
+        <figcaption>
+          Amortiguador Delantero Chevrolet Spark 96424026 Derecho
+        </figcaption>
+        <p>Precio:40$</p>
+        <a href="#" class="btn">Comprar</a>
+        <h3 class="status sold-out">AGOTADO</h3>
+      </figure>
     </section>
-    <button type="submit">Guardar Cambios</button>
-  </form>
-  <form action="../php/services/logoff.php" method="post">
-    <button type="submit">Cerrar Sesión</button>
-  </form>
+    <h2>Testimonios de Pasantía</h2>
+    <section id="testimonios" class="testimonial-container">
+
+      <section class="testimonial-card">
+        <blockquote>
+          "Mi tiempo aquí fue una experiencia de aprendizaje increíble. Pude aplicar mis conocimientos de desarrollo web
+          en un proyecto real y el equipo siempre estuvo dispuesto a ayudar."
+        </blockquote>
+        <section class="testimonial-author">
+          <p class="author-name">Jose Correa</p>
+          <p class="author-role">Pasante de Desarrollo Web</p>
+        </section>
+      </section>
+
+      <section class="testimonial-card">
+        <blockquote>
+          "El ambiente de trabajo en Lubriken C.A. es excelente. Aprendí no solo sobre bases de datos y PHP, sino
+          también sobre metodologías de trabajo y buenas prácticas en la industria."
+        </blockquote>
+        <section class="testimonial-author">
+          <p class="author-name">Jonathan Campos</p>
+          <p class="author-role">Pasante de Ingeniería de Software</p>
+        </section>
+      </section>
+
+      <section class="testimonial-card">
+        <blockquote>
+          "Una pasantía muy completa. Pude participar en el análisis de requerimientos, diseño de la base de datos y
+          desarrollo del backend. 100% recomendada."
+        </blockquote>
+        <section class="testimonial-author">
+          <p class="author-name">Andres Jatar</p>
+          <p class="author-role">Pasante de Backend</p>
+        </section>
+      </section>
+
+      <section class="testimonial-card">
+        <blockquote>
+          "Fue una gran oportunidad para aplicar lo aprendido en la universidad. Participé activamente en el desarrollo
+          de un nuevo módulo, desde el diseño de la interfaz con HTML y CSS hasta la implementación de la lógica del
+          negocio en el backend. Aprendí muchísimo sobre control de versiones."
+        </blockquote>
+        <section class="testimonial-author">
+          <p class="author-name">Kevyn Camacaro (The special one)</p>
+          <p class="author-role">Pasante de Backend</p>
+        </section>
+      </section>
+
+      <section class="testimonial-card">
+        <blockquote>
+          ""La pasantía superó mis expectativas. Pude trabajar directamente con PHP y MySQL en el sistema principal,
+          optimizando consultas y aprendiendo sobre seguridad web. El equipo siempre estuvo dispuesto a guiarme y
+          resolvió todas mis dudas."
+        </blockquote>
+        <section class="testimonial-author">
+          <p class="author-name">Juan Pereira</p>
+          <p class="author-role">Pasante de Backend</p>
+        </section>
+      </section>
+
+    </section>
+    </section>
+  </main>
   <script src="../js/header-component.js"></script>
 </body>
 

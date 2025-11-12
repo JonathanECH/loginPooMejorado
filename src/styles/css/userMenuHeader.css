@@ -11,6 +11,8 @@ header {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  position: sticky;
+  top: 0;
   background-color: var(--ternary-color);
 }
 header img {
@@ -51,7 +53,7 @@ header .desktop-menu ul li:hover {
 @media (width < 680px) {
   header {
     position: fixed;
-    bottom: 2%;
+    top: 93%;
     left: 2%;
     height: 3em;
     width: 3em;
@@ -122,10 +124,9 @@ header .desktop-menu ul li:hover {
     -webkit-box-pack: center;
         -ms-flex-pack: center;
             justify-content: center;
-    position: absolute;
     height: 100%;
     width: 100%;
-    bottom: 0;
+    top: 100%;
     border-radius: 50%;
     background-color: var(--secondary-color);
     color: white;
@@ -135,7 +136,7 @@ header .desktop-menu ul li:hover {
 @media (680px <= width < 800px) {
   header {
     position: sticky;
-    bottom: 100%;
+    top: 0;
     width: 100%;
     -webkit-box-pack: justify;
         -ms-flex-pack: justify;
@@ -173,7 +174,7 @@ header .desktop-menu ul li:hover {
 @media (width >= 800px) {
   header {
     position: sticky;
-    bottom: 100%;
+    top: 0;
     width: 100%;
     -webkit-box-pack: justify;
         -ms-flex-pack: justify;
@@ -198,6 +199,7 @@ header .desktop-menu ul li:hover {
     gap: 5px;
   }
   header .desktop-menu ul li {
+    font-size: 0.7rem;
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;

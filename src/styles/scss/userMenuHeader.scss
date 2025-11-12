@@ -3,6 +3,8 @@
 header {
   z-index: 1000;
   display: flex;
+  position: sticky; 
+  top: 0;
   background-color: var(--ternary-color);
   img {
     object-fit: cover;
@@ -39,7 +41,7 @@ header {
 @media (width < 680px) {
   header {
     position: fixed;
-    bottom: 2%;
+    top: 93%;
     left: 2%;
     height: 3em;
     width: 3em;
@@ -89,10 +91,9 @@ header {
       display: flex;
       align-items: center;
       justify-content: center;
-      position: absolute;
       height: 100%;
       width: 100%;
-      bottom: 0;
+      top: 100%;
       border-radius: 50%;
       background-color: var(--secondary-color);
       color: white;
@@ -103,7 +104,7 @@ header {
 @media (680px <= width < 800px) {
   header {
     position: sticky;
-    bottom: 100%;
+    top:0;
     width: 100%;
     justify-content: space-between;
     padding: {
@@ -136,7 +137,7 @@ header {
 @media (width >= 800px) {
   header {
     position: sticky;
-    bottom: 100%;
+    top:0;
     width: 100%;
     justify-content: space-between;
     padding: {
@@ -155,6 +156,7 @@ header {
         flex-flow: row nowrap;
         gap: 5px;
         li {
+          font-size: .7rem;
           align-items: center;
           height: 100%;
           padding: 0.5rem 1rem;
