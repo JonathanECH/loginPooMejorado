@@ -1,4 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Momo+Trust+Display&family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&display=swap");
+:root {
+  --primary-color: orange;
+  --secondary-color: #3d4295;
+  --ternary-color: #5c61e1;
+  --font-color: #333333;
+  --background-color: #ffffff;
+}
+
 * {
   padding: 0;
   margin: 0;
@@ -11,9 +19,25 @@
   scroll-behavior: smooth;
 }
 
+body #testimonio-pepon {
+  text-align: center;
+}
 body .errorMsg {
   color: red;
   font-weight: bold;
   border: 1px solid red;
   padding: 10px;
+}
+
+footer {
+  width: 100%;
+  /* Fondo con el color de fuente oscuro y texto blanco */
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  padding: 20px 0;
+  margin-top: 50px;
+  text-align: center;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  position: relative;
 }

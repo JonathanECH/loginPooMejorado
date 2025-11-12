@@ -153,7 +153,7 @@ if (isset($_SESSION['update_error'])) {
         <h3 class="status sold-out">AGOTADO</h3>
       </figure>
     </section>
-    <h2>Testimonios de Pasantía</h2>
+    <h2 id="testimonio-pepon">Testimonios de Pasantía</h2>
     <section id="testimonios" class="testimonial-container">
 
       <section class="testimonial-card">
@@ -240,6 +240,12 @@ if (isset($_SESSION['update_error'])) {
     </section>
     <!--Preguntas frecuentes-->
   </main>
+  <footer>
+    <section class="footer-content">
+      <p>&copy; 2025 Lubriken. Todos los derechos reservados.</p>
+      <p>Barquisimeto, Edo. Lara, Venezuela | Contacto: XXXX-XXXXXXX</p>
+    </section>
+  </footer>
   <script src="../js/header-component.js"></script>
 </body>
 
