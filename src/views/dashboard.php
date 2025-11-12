@@ -43,6 +43,7 @@ if (isset($_SESSION['update_error'])) {
   <link rel="stylesheet" href="../styles/css/product.css">
   <link rel="stylesheet" href="../styles/css/testimonials.css">
   <link rel="stylesheet" id="sobrenosotros-style" href="../styles/css/section-sobrenosotros.css">
+  <link rel="stylesheet" href="../styles/css/preguntas.css">
   <title>Dashboard</title>
 </head>
 
@@ -55,6 +56,7 @@ if (isset($_SESSION['update_error'])) {
         <li><a href="#sobrenosotros-view">Sobre nosotros</a></li>
         <li><a href="#productos">Nuestros Productos</a></li>
         <li><a href="#testimonios">testimonial de pasantias</a></li>
+        <li><a href="#preguntas">FAQs</a></li>
         <li><a href="./login.php">Iniciar Sesión</a></li>
       </ul>
       </ul>
@@ -65,6 +67,7 @@ if (isset($_SESSION['update_error'])) {
         <li><a href="#sobrenosotros-view">Sobre nosotros</a></li>
         <li><a href="#productos">Nuestros Productos</a></li>
         <li><a href="#testimonios">testimonial de pasantias</a></li>
+        <li><a href="#preguntas">FAQs</a></li>
         <li><a href="./login.php">Iniciar Sesión</a></li>
       </ul>
     </nav>
@@ -211,7 +214,31 @@ if (isset($_SESSION['update_error'])) {
       </section>
 
     </section>
+    <!--Preguntas frecuentes-->
+    <h3 class="faq-title">Preguntas Frecuentes</h3>
+    <section id="preguntas" class="preguntas">
+      <article class="pregunta-card">
+        <h4>¿Donde estan ubicados? C.A</h4>
+        <p>Urbanización Los Crepusculos, Barquisimeto 3001, Lara</p>
+      </article>
+
+      <article class="pregunta-card">
+        <h4>¿Cuales son sus horarios de atencion? C.A</h4>
+        <p>Lunes a Viernes de 8:00 am a 5:00 pm</p>
+      </article>
+
+      <article class="pregunta-card">
+        <h4>¿Realizan envios a domicilio? C.A</h4>
+        <p>Por ahora no realizamos envio a domicilio.</p>
+      </article>
+
+      <article class="pregunta-card">
+        <h4>¿Cuales son sus metodos de pago? C.A</h4>
+        <p>Aceptamos pagos en efectivo y transferencias bancarias.</p>
+      </article>
+
     </section>
+    <!--Preguntas frecuentes-->
   </main>
   <script src="../js/header-component.js"></script>
 </body>

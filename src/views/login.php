@@ -22,30 +22,45 @@ if (isset($_SESSION['error_login'])) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../styles/css/globalStyles.css">
-  <link rel="stylesheet" href="../styles/css/formDefaultStyles.css">
-  <link rel="stylesheet" href="../styles/css/formBackgrouns.css">
+  <!-- <link rel="stylesheet" href="../styles/css/formDefaultStyles.css"> -->
+  <link rel="stylesheet" href="../styles/css/auth-forms.css">
+  <!-- <link rel="stylesheet" href="../styles/css/formBackgrouns.css"> -->
   <title>Login</title>
 </head>
 
 <body>
-  <?php if ($error_message): ?>
-    <p class="errorMsg">
-      <?php echo htmlspecialchars($error_message); ?>
-    </p>
-  <?php endif; ?>
-  <form action="../php/services/loginService.php" method="post">
+  <div class="form-container">
+    <img src="../images/Lubriken-log-o-type.png" alt="Logotipo Lubriken" class="logo">
+
     <h2>Iniciar Sesión</h2>
-    <a href="/loginPooMejorado/src/views/register.php">No tienes cuenta?, crea una.</a>
-    <section>
-      <label>Email:</label>
-      <input type="email" name="email" required />
-    </section>
-    <section>
-      <label>Contraseña:</label>
-      <input type="password" name="password" required />
-    </section>
-    <button type="submit">Ingresar</button>
-  </form>
+
+    <?php
+    // Mostrar mensaje de error si existe
+    if (isset($_SESSION['error_message'])) {
+      echo '<div class="error-message">' . $_SESSION['error_message'] . '</div>';
+      // Limpiar el mensaje de error para que no se muestre de nuevo
+      unset($_SESSION['error_message']);
+    }
+    ?>
+
+    <form action="../php/services/loginService.php" method="POST">
+      <div class="form-group">
+        <label for="email">Correo</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+
+      <button type="submit" class="submit-btn">Ingresar</button>
+    </form>
+
+    <div class="toggle-link">
+      <p>¿No tienes una cuenta? <a href="register.php">Regístrate aquí</a></p>
+    </div>
+  </div>
 </body>
 
 </html>
