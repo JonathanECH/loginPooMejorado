@@ -4,25 +4,25 @@ session_start();
 require_once '../php/classes/user.php';
 
 // 1. Guardia de seguridad: Asegura que el usuario esté logueado
-if (!isset($_SESSION['user_id'])) {
-  header("Location: ../views/login.php");
-  exit;
-}
+// if (!isset($_SESSION['user_id'])) {
+//   header("Location: ../views/login.php");
+//   exit;
+// }
 
-$id_usuario = $_SESSION['user_id'];
+// $id_usuario = $_SESSION['user_id'];
 
 // 2. Usar la clase para obtener los datos
-$userModel = new User();
-$datos_usuario = $userModel->getUserDataById($id_usuario);
+// $userModel = new User();
+// $datos_usuario = $userModel->getUserDataById($id_usuario);
 
-if (!$datos_usuario) {
-  // En caso de error, destruye la sesión y finaliza
-  session_destroy();
-  die("Error: No se pudieron cargar los datos del usuario. Por favor, inicia sesión de nuevo.");
-}
+// if (!$datos_usuario) {
+//   // En caso de error, destruye la sesión y finaliza
+//   session_destroy();
+//   die("Error: No se pudieron cargar los datos del usuario. Por favor, inicia sesión de nuevo.");
+// }
 
-$nombre_actual = htmlspecialchars($datos_usuario['nombre']);
-$email_actual = htmlspecialchars($datos_usuario['email']);
+// $nombre_actual = htmlspecialchars($datos_usuario['nombre']);
+// $email_actual = htmlspecialchars($datos_usuario['email']);
 
 //Obtención de mensajes de error de actualización
 $update_error_message = null;
@@ -48,7 +48,7 @@ if (isset($_SESSION['update_error'])) {
 </head>
 
 <body>
-  <header>
+  <header id="navigation-bar">
     <img src="../images/lubriken-log-o-type.png" alt="logotype" />
     <nav class="desktop-menu">
       <ul>

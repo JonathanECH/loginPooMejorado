@@ -3,7 +3,7 @@
 header {
   z-index: 1000;
   display: flex;
-  position: sticky; 
+  position: sticky;
   top: 0;
   background-color: var(--ternary-color);
   img {
@@ -12,8 +12,8 @@ header {
   nav {
     ul {
       li {
-        -webkit-text-stroke-width: 0.2px;
-        -webkit-text-stroke-color: white;
+        // -webkit-text-stroke-width: 0.2px;
+        // -webkit-text-stroke-color: white;
         color: var(--primary-color);
         cursor: pointer;
         transition-duration: 0.5s;
@@ -41,14 +41,14 @@ header {
 @media (width < 680px) {
   header {
     position: fixed;
-    top: 93%;
+    top: 92%;
     left: 2%;
     height: 3em;
     width: 3em;
     flex-flow: column nowrap;
     justify-content: center;
     align-items: center;
-    background-color: white;
+    background-color: transparent;
     img {
       display: none;
     }
@@ -56,6 +56,7 @@ header {
       display: none;
     }
     #mobile-menu {
+      transition-duration: 0.3s;
       height: 100vh;
       width: 100vw;
       display: none;
@@ -71,7 +72,7 @@ header {
         justify-content: end;
         padding: {
           left: 1em;
-          bottom: 4em;
+          bottom: 5.25em;
         }
         list-style: none;
         gap: 10px;
@@ -79,7 +80,7 @@ header {
           font-size: 1.5rem;
           &:hover {
             background-color: var(--secondary-color);
-            border-radius: 5px;
+            border-radius: 1px;
           }
         }
       }
@@ -96,6 +97,7 @@ header {
       top: 100%;
       border-radius: 50%;
       background-color: var(--secondary-color);
+      border: 1px solid var(--primary-color);
       color: white;
       z-index: 1000;
     }
@@ -104,7 +106,7 @@ header {
 @media (680px <= width < 800px) {
   header {
     position: sticky;
-    top:0;
+    top: 0;
     width: 100%;
     justify-content: space-between;
     padding: {
@@ -125,10 +127,10 @@ header {
         li {
           align-items: center;
           height: 100%;
-          padding: 0.25rem 0.5rem;
+          padding: 0.1rem 0.25rem;
           border: 1px solid transparent;
-          border-radius: 15px 15px 0 0;
-          font-size: 0.9rem;
+          border-radius: 5px 5px 0 0;
+          font-size: 0.55em;
         }
       }
     }
@@ -137,12 +139,12 @@ header {
 @media (width >= 800px) {
   header {
     position: sticky;
-    top:0;
+    top: 0;
     width: 100%;
     justify-content: space-between;
     padding: {
-      right: 1rem;
-      left: 1rem;
+      right: 0.5rem;
+      left: 0.5rem;
     }
     #mobile-menu {
       display: none;
@@ -156,12 +158,25 @@ header {
         flex-flow: row nowrap;
         gap: 5px;
         li {
-          font-size: .7rem;
+          font-size: 0.75rem;
           align-items: center;
           height: 100%;
-          padding: 0.5rem 1rem;
+          padding: 0.20rem 0.25rem;
           border: 1px solid transparent;
-          border-radius: 15px 15px 0 0;
+          border-radius: 5px 5px 5px 5px;
+        }
+      }
+    }
+  }
+}
+@media (width >= 890px) {
+  header {
+    .desktop-menu {
+      ul {
+        li {
+          font-size: 0.9rem;
+          height: 100%;
+          padding: 0.10rem 0.20rem;
         }
       }
     }

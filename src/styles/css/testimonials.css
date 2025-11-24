@@ -11,8 +11,8 @@
     border-radius: 8px;
 }
 a {
-    -webkit-text-stroke-width: 0.2px;
-    -webkit-text-stroke-color: white;
+    /* -webkit-text-stroke-width: 0.2px;
+    -webkit-text-stroke-color: white; */
     font-weight: bold;
     color: var(--primary-color);
     text-decoration: none;
