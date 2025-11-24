@@ -19,6 +19,13 @@
   scroll-behavior: smooth;
 }
 
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+}
 body #testimonio-pepon {
   text-align: center;
 }

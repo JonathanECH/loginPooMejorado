@@ -41,7 +41,9 @@ header {
 @media (width < 680px) {
   header {
     position: fixed;
-    top: 92%;
+    top: auto;
+    // top: 92%;
+    bottom: 2%;
     left: 2%;
     height: 3em;
     width: 3em;
@@ -72,7 +74,7 @@ header {
         justify-content: end;
         padding: {
           left: 1em;
-          bottom: 5.25em;
+          bottom: 4.5em;
         }
         list-style: none;
         gap: 10px;
@@ -100,6 +102,7 @@ header {
       border: 1px solid var(--primary-color);
       color: white;
       z-index: 1000;
+      opacity: .7;
     }
   }
 }
@@ -118,6 +121,7 @@ header {
     }
     #mobile-menu-btn {
       display: none;
+      opacity: .7;
     }
     .desktop-menu {
       ul {

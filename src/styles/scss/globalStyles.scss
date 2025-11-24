@@ -11,8 +11,13 @@
   scroll-behavior: smooth;
 }
 
+html {
+  height: 100%;
+}
+
 body {
-  #testimonio-pepon{
+  min-height: 100vh;
+  #testimonio-pepon {
     text-align: center;
   }
   .errorMsg {
@@ -24,13 +29,13 @@ body {
 }
 
 footer {
-    width: 100%;
-    /* Fondo con el color de fuente oscuro y texto blanco */
-    background-color: var(--secondary-color); 
-    color: var(--primary-color); 
-    padding: 20px 0;
-    margin-top: 50px;
-    text-align: center;
-    box-sizing: border-box;
-    position: relative;
+  width: 100%;
+  /* Fondo con el color de fuente oscuro y texto blanco */
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  padding: 20px 0;
+  margin-top: 50px;
+  text-align: center;
+  box-sizing: border-box;
+  position: relative;
 }
