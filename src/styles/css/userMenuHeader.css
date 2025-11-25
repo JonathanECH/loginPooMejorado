@@ -1,3 +1,4 @@
+@charset "UTF-8";
 :root {
   --primary-color: orange;
   --secondary-color: #3d4295;
@@ -135,6 +136,32 @@ header .desktop-menu ul li:hover {
     opacity: 0.7;
   }
 }
+@media (width >= 680px) {
+  header {
+    /* Asegúrate de quitar justify-content: space-between; de aquí si existe en tu versión de 680px */
+    width: 100%;
+    /* Añade el estilo para el nuevo wrapper en estas vistas */
+    /* Quita los padding de header si los moviste al wrapper */
+    padding: 0;
+  }
+  header #desktop-navbar {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center; /* Alineación vertical */
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    width: 100%;
+    /* Define el ANCHO MÁXIMO del contenido y céntralo */
+    max-width: 1200px; /* VALOR RECOMENDADO: Puedes ajustarlo (ej. 1000px, 1400px) */
+    margin: 0 auto; /* Centra el contenedor interno */
+    /* Mueve el padding aquí para que solo se aplique dentro del max-width */
+    padding: 0.25rem 0.5rem;
+  }
+}
 @media (680px <= width < 800px) {
   header {
     position: sticky;
@@ -153,7 +180,7 @@ header .desktop-menu ul li:hover {
     display: none;
     opacity: 0.7;
   }
-  header .desktop-menu ul {
+  header #desktop-navbar .desktop-menu ul {
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
@@ -163,7 +190,7 @@ header .desktop-menu ul li:hover {
             flex-flow: row nowrap;
     gap: 3px;
   }
-  header .desktop-menu ul li {
+  header #desktop-navbar .desktop-menu ul li {
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
@@ -191,7 +218,7 @@ header .desktop-menu ul li:hover {
   header #mobile-menu-btn {
     display: none;
   }
-  header .desktop-menu ul {
+  header #desktop-navbar .desktop-menu ul {
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
@@ -201,8 +228,8 @@ header .desktop-menu ul li:hover {
             flex-flow: row nowrap;
     gap: 5px;
   }
-  header .desktop-menu ul li {
-    font-size: 0.75rem;
+  header #desktop-navbar .desktop-menu ul li {
+    font-size: 0.72rem;
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
@@ -213,7 +240,7 @@ header .desktop-menu ul li:hover {
   }
 }
 @media (width >= 890px) {
-  header .desktop-menu ul li {
+  header #desktop-navbar .desktop-menu ul li {
     font-size: 0.9rem;
     height: 100%;
     padding: 0.1rem 0.2rem;

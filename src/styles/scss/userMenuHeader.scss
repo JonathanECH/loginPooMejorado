@@ -102,8 +102,32 @@ header {
       border: 1px solid var(--primary-color);
       color: white;
       z-index: 1000;
-      opacity: .7;
+      opacity: 0.7;
     }
+  }
+}
+@media (width >= 680px) {
+  header {
+    /* Asegúrate de quitar justify-content: space-between; de aquí si existe en tu versión de 680px */
+    width: 100%;
+
+    /* Añade el estilo para el nuevo wrapper en estas vistas */
+    #desktop-navbar {
+      display: flex;
+      align-items: center; /* Alineación vertical */
+      justify-content: space-between;
+      width: 100%;
+
+      /* Define el ANCHO MÁXIMO del contenido y céntralo */
+      max-width: 1200px; /* VALOR RECOMENDADO: Puedes ajustarlo (ej. 1000px, 1400px) */
+      margin: 0 auto; /* Centra el contenedor interno */
+
+      /* Mueve el padding aquí para que solo se aplique dentro del max-width */
+      padding: 0.25rem 0.5rem;
+    }
+
+    /* Quita los padding de header si los moviste al wrapper */
+    padding: 0;
   }
 }
 @media (680px <= width < 800px) {
@@ -121,20 +145,22 @@ header {
     }
     #mobile-menu-btn {
       display: none;
-      opacity: .7;
+      opacity: 0.7;
     }
-    .desktop-menu {
-      ul {
-        align-items: center;
-        flex-flow: row nowrap;
-        gap: 3px;
-        li {
+    #desktop-navbar {
+      .desktop-menu {
+        ul {
           align-items: center;
-          height: 100%;
-          padding: 0.1rem 0.25rem;
-          border: 1px solid transparent;
-          border-radius: 5px 5px 0 0;
-          font-size: 0.55em;
+          flex-flow: row nowrap;
+          gap: 3px;
+          li {
+            align-items: center;
+            height: 100%;
+            padding: 0.1rem 0.25rem;
+            border: 1px solid transparent;
+            border-radius: 5px 5px 0 0;
+            font-size: 0.55em;
+          }
         }
       }
     }
@@ -156,18 +182,20 @@ header {
     #mobile-menu-btn {
       display: none;
     }
-    .desktop-menu {
-      ul {
-        align-items: center;
-        flex-flow: row nowrap;
-        gap: 5px;
-        li {
-          font-size: 0.75rem;
+    #desktop-navbar {
+      .desktop-menu {
+        ul {
           align-items: center;
-          height: 100%;
-          padding: 0.20rem 0.25rem;
-          border: 1px solid transparent;
-          border-radius: 5px 5px 5px 5px;
+          flex-flow: row nowrap;
+          gap: 5px;
+          li {
+            font-size: 0.72rem;
+            align-items: center;
+            height: 100%;
+            padding: 0.2rem 0.25rem;
+            border: 1px solid transparent;
+            border-radius: 5px 5px 5px 5px;
+          }
         }
       }
     }
@@ -175,12 +203,14 @@ header {
 }
 @media (width >= 890px) {
   header {
-    .desktop-menu {
-      ul {
-        li {
-          font-size: 0.9rem;
-          height: 100%;
-          padding: 0.10rem 0.20rem;
+    #desktop-navbar {
+      .desktop-menu {
+        ul {
+          li {
+            font-size: 0.9rem;
+            height: 100%;
+            padding: 0.1rem 0.2rem;
+          }
         }
       }
     }

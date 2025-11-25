@@ -49,28 +49,30 @@ if (isset($_SESSION['update_error'])) {
 
 <body>
   <header id="navigation-bar">
-    <img src="../images/lubriken-log-o-type.png" alt="logotype" />
-    <nav class="desktop-menu">
-      <ul>
-        <li><a href="#">Inicio</a></li>
-        <li><a href="#sobrenosotros-view">Sobre nosotros</a></li>
-        <li><a href="#productos">Nuestros Productos</a></li>
-        <li><a href="#testimonios">testimonial de pasantias</a></li>
-        <li><a href="#preguntas">FAQs</a></li>
-        <li><a href="./login.php">Iniciar Sesión</a></li>
-      </ul>
-      </ul>
-    </nav>
-    <nav id="mobile-menu">
-      <ul>
-        <li><a href="#">Inicio</a></li>
-        <li><a href="#sobrenosotros-view">Sobre nosotros</a></li>
-        <li><a href="#productos">Nuestros Productos</a></li>
-        <li><a href="#testimonios">testimonial de pasantias</a></li>
-        <li><a href="#preguntas">FAQs</a></li>
-        <li><a href="./login.php">Iniciar Sesión</a></li>
-      </ul>
-    </nav>
+    <section id="desktop-navbar">
+      <img src="../images/lubriken-log-o-type.png" alt="logotype" />
+      <nav class="desktop-menu">
+        <ul>
+          <li><a href="#">Inicio</a></li>
+          <li><a href="#sobrenosotros-view">Sobre nosotros</a></li>
+          <li><a href="#productos">Nuestros Productos</a></li>
+          <li><a href="#testimonios">testimonial de pasantias</a></li>
+          <li><a href="#preguntas">FAQs</a></li>
+          <li><a href="./login.php">Iniciar Sesión</a></li>
+        </ul>
+        </ul>
+      </nav>
+      <nav id="mobile-menu">
+        <ul>
+          <li><a href="#">Inicio</a></li>
+          <li><a href="#sobrenosotros-view">Sobre nosotros</a></li>
+          <li><a href="#productos">Nuestros Productos</a></li>
+          <li><a href="#testimonios">testimonial de pasantias</a></li>
+          <li><a href="#preguntas">FAQs</a></li>
+          <li><a href="./login.php">Iniciar Sesión</a></li>
+        </ul>
+      </nav>
+    </section>
     <button id="mobile-menu-btn">☰</button>
   </header>
   <main>
