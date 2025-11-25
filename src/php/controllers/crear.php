@@ -3,6 +3,7 @@ session_start();
 // 1. Asegúrate de incluir la nueva clase
 include '../classes/user.php';
 
+//MÉTODO CREATE PARA REGISTRAR UN USUARIO
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // 2. Recolección y Sanitización
     $errors = [];

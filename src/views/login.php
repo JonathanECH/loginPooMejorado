@@ -43,7 +43,7 @@ if (isset($_SESSION['error_login'])) {
     }
     ?>
 
-    <form action="../php/services/loginService.php" method="POST">
+    <form action="../php/controllers/loginService.php" method="POST">
       <div class="form-group">
         <label for="email">Correo</label>
         <input type="email" id="email" name="email" required>

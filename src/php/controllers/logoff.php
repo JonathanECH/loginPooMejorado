@@ -5,7 +5,7 @@ unset($_SESSION['user_id']);
 unset($_SESSION['usuario']);
 
 // 3. Eliminar TODAS las variables de sesión
-$_SESSION = array();
+$_SESSION = [];
 
 // 4. Invalidar la cookie de sesión
 if (ini_get("session.use_cookies")) {

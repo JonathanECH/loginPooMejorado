@@ -53,7 +53,7 @@ unset($_SESSION['form_data']);
     }
     ?>
 
-    <form action="../php/CRUD/crear.php" method="POST">
+    <form action="../php/controllers/crear.php" method="POST">
       <div class="form-group">
         <label for="nombre">Nombre de Usuario</label>
         <input type="text" id="nombre" name="nombre" required>

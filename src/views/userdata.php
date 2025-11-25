@@ -52,7 +52,7 @@ if (isset($_SESSION['update_error'])) {
     <?php if ($update_error_message): ?>
         <p class="errorMsg"><?php echo htmlspecialchars($update_error_message); ?></p>
     <?php endif; ?>
-    <form action="../php/CRUD/actualizar.php" method="post">
+    <form action="../php/controllers/actualizar.php" method="post">
         <h4>Modificar Perfil</h4>
         <section>
             <label>Nuevo Nombre:</label>
