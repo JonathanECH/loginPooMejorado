@@ -136,8 +136,8 @@ class User
     /* Se encarga de actualizar el usuario */
     public function update($id, $nombre, $email)
     {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-            return "Error: Formato de email inválido.";
+        // if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+        //     return "Error: Formato de email inválido.";
 
         // 2. NUEVA CLÁUSULA DE GUARDA: Verificar si el email ya existe para OTRO usuario
         $sql_check = "SELECT id FROM usuarios WHERE email = ? AND id != ?";
