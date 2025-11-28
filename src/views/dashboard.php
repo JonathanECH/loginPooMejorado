@@ -1,28 +1,24 @@
 <?php
 // src/php/dashboard.php (Refactorizado para usar User::getUserDataById)
 session_start();
-require_once '../php/classes/user.php';
+//require_once '../php/classes/user.php';
 
 // 1. Guardia de seguridad: Asegura que el usuario esté logueado
-// if (!isset($_SESSION['user_id'])) {
-//   header("Location: ../views/login.php");
-//   exit;
+// if (!isset($_SESSION['user_id'], $_SESSION['usuario'])) {
+//     // Si no está logueado, redirige
+//     header("Location: login.php");
+//     exit;
 // }
 
-// $id_usuario = $_SESSION['user_id'];
+if (isset($_SESSION['user_id'], $_SESSION['usuario'])) {
+  $nombre_usuario = htmlspecialchars($_SESSION['usuario']);
+  $id_usuario = $_SESSION['user_id'];
+}
 
-// 2. Usar la clase para obtener los datos
-// $userModel = new User();
-// $datos_usuario = $userModel->getUserDataById($id_usuario);
+// Obtenemos el nombre del usuario directamente de la sesión para mostrarlo
 
-// if (!$datos_usuario) {
-//   // En caso de error, destruye la sesión y finaliza
-//   session_destroy();
-//   die("Error: No se pudieron cargar los datos del usuario. Por favor, inicia sesión de nuevo.");
-// }
-
-// $nombre_actual = htmlspecialchars($datos_usuario['nombre']);
-// $email_actual = htmlspecialchars($datos_usuario['email']);
+// Nota: El código comentado que obtiene datos de la DB cada vez NO es necesario solo para mostrar el nombre.
+// Lo mantienes comentado para evitar la carga innecesaria del modelo.
 
 //Obtención de mensajes de error de actualización
 $update_error_message = null;
@@ -58,7 +54,14 @@ if (isset($_SESSION['update_error'])) {
           <li><a href="#productos">Nuestros Productos</a></li>
           <li><a href="#testimonios">testimonial de pasantias</a></li>
           <li><a href="#preguntas">FAQs</a></li>
-          <li><a href="./login.php">Iniciar Sesión</a></li>
+          <?php if (isset($_SESSION['usuario'])): ?>
+            <li class="user-menu-item">
+              <a href="#perfil" id="user-name-link"><?php echo $nombre_usuario; ?></a>
+              <!-- <a href="../php/controllers/UserController.php?action=logout" class="logout-btn">Cerrar Sesión</a> -->
+            </li>
+          <?php else: ?>
+            <li><a href="./login.php">Iniciar Sesión</a></li>
+          <?php endif; ?>
         </ul>
         </ul>
       </nav>
@@ -69,7 +72,14 @@ if (isset($_SESSION['update_error'])) {
           <li><a href="#productos">Nuestros Productos</a></li>
           <li><a href="#testimonios">testimonial de pasantias</a></li>
           <li><a href="#preguntas">FAQs</a></li>
-          <li><a href="./login.php">Iniciar Sesión</a></li>
+          <?php if (isset($_SESSION['usuario'])): ?>
+            <li class="user-menu-item">
+              <a href="#perfil" id="user-name-link"><?php echo $nombre_usuario; ?></a>
+              <!-- <a href="../php/controllers/UserController.php?action=logout" class="logout-btn">Cerrar Sesión</a> -->
+            </li>
+          <?php else: ?>
+            <li><a href="./login.php">Iniciar Sesión</a></li>
+          <?php endif; ?>
         </ul>
       </nav>
     </section>

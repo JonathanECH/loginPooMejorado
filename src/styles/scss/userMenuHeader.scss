@@ -14,7 +14,7 @@ header {
       li {
         // -webkit-text-stroke-width: 0.2px;
         // -webkit-text-stroke-color: white;
-        color: var(--primary-color);
+        color: var(--blank-color);
         cursor: pointer;
         transition-duration: 0.5s;
         font-weight: bold;
@@ -73,8 +73,8 @@ header {
         flex-flow: column nowrap;
         justify-content: end;
         padding: {
-          left: 1em;
-          bottom: 4.5em;
+          left: 1.2em;
+          bottom: 5.5em;
         }
         list-style: none;
         gap: 10px;
@@ -132,6 +132,7 @@ header {
 }
 @media (680px <= width < 800px) {
   header {
+    box-shadow: 0px 8px 6px -6px #333;
     position: sticky;
     top: 0;
     width: 100%;
@@ -203,6 +204,7 @@ header {
 }
 @media (width >= 890px) {
   header {
+    box-shadow: 0px 8px 6px -6px #333;
     #desktop-navbar {
       .desktop-menu {
         ul {

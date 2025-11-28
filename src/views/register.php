@@ -30,38 +30,31 @@ unset($_SESSION['form_data']);
 </head>
 
 <body>
-  <?php if (!empty($errors)): ?>
-    <div style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 20px;">
-      <p class="errorMsg">**Se encontraron los siguientes errores:**</p>
-      <ul>
-        <?php foreach ($errors as $error): ?>
-          <li><?php echo htmlspecialchars($error); ?></li>
-        <?php endforeach; ?>
-      </ul>
-    </div>
-  <?php endif; ?>
   <div class="form-container">
     <img src="../images/Lubriken-log-o-type.png" alt="Logotipo Lubriken" class="logo">
-
     <h2>Crear Cuenta</h2>
-
-    <?php
-    // Mostrar mensaje de error si existe
-    if (isset($_SESSION['error_message'])) {
-      echo '<div class="error-message">' . $_SESSION['error_message'] . '</div>';
-      unset($_SESSION['error_message']);
-    }
-    ?>
-
-    <form action="../php/controllers/crear.php" method="POST">
+    <?php if (!empty($errors)): ?>
+      <div class="error-message" style="color: red; border: 1px solid red; padding: 10px; margin-bottom: 20px;">
+        <p class="errorMsg">**Se encontraron los siguientes errores:**</p>
+        <ul>
+          <?php foreach ($errors as $error): ?>
+            <li><?php echo htmlspecialchars($error); ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+    <form action="../php/controllers/UserController.php" method="POST">
+      <input type="hidden" name="action" value="register">
       <div class="form-group">
         <label for="nombre">Nombre de Usuario</label>
-        <input type="text" id="nombre" name="nombre" required>
+        <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($form_data['nombre']); ?>"
+          required>
       </div>
 
       <div class="form-group">
         <label for="email">Correo</label>
-        <input type="email" id="email" name="email" required>
+        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($form_data['email']); ?>"
+          required>
       </div>
 
       <div class="form-group">

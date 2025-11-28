@@ -7,11 +7,22 @@ require_once '../php/classes/user.php';
 //   exit;
 // }
 
-$error_message = null;
+// $error_message = null;
+// if (isset($_SESSION['error_login'])) {
+//   $error_message = $_SESSION['error_login'];
+//   // 2. IMPORTANTE: Eliminar el mensaje de la sesión para que no se muestre de nuevo
+//   unset($_SESSION['error_login']);
+// }
+$message = null;
+
+// 1. Manejar el error de Login (si viene del controlador)
 if (isset($_SESSION['error_login'])) {
-  $error_message = $_SESSION['error_login'];
-  // 2. IMPORTANTE: Eliminar el mensaje de la sesión para que no se muestre de nuevo
+  $message = '<div class="error-message" style="color: red;">' . $_SESSION['error_login'] . '</div>';
   unset($_SESSION['error_login']);
+}
+// 2. Manejar el mensaje de Éxito de Registro (si viene de la URL)
+elseif (isset($_GET['register']) && $_GET['register'] === 'success') {
+  $message = '<div class="success-message" style="color: green;">¡Registro exitoso! Por favor, inicie sesión.</div>';
 }
 ?>
 
@@ -36,14 +47,13 @@ if (isset($_SESSION['error_login'])) {
 
     <?php
     // Mostrar mensaje de error si existe
-    if (isset($_SESSION['error_message'])) {
-      echo '<div class="error-message">' . $_SESSION['error_message'] . '</div>';
-      // Limpiar el mensaje de error para que no se muestre de nuevo
-      unset($_SESSION['error_message']);
+    if ($message) {
+      echo $message;
     }
     ?>
 
-    <form action="../php/controllers/loginService.php" method="POST">
+    <form action="../php/controllers/UserController.php" method="POST">
+      <input type="hidden" name="action" value="login">
       <div class="form-group">
         <label for="email">Correo</label>
         <input type="email" id="email" name="email" required>

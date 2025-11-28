@@ -4,7 +4,7 @@
   --secondary-color: #3d4295;
   --ternary-color: #5c61e1;
   --font-color: #333333;
-  --background-color: #ffffff;
+  --blank-color: #ffffff;
 }
 
 header {
@@ -21,7 +21,7 @@ header img {
      object-fit: cover;
 }
 header nav ul li {
-  color: var(--primary-color);
+  color: var(--blank-color);
   cursor: pointer;
   -webkit-transition-duration: 0.5s;
           transition-duration: 0.5s;
@@ -101,8 +101,8 @@ header .desktop-menu ul li:hover {
     -webkit-box-pack: end;
         -ms-flex-pack: end;
             justify-content: end;
-    padding-left: 1em;
-    padding-bottom: 4.5em;
+    padding-left: 1.2em;
+    padding-bottom: 5.5em;
     list-style: none;
     gap: 10px;
   }
@@ -164,6 +164,8 @@ header .desktop-menu ul li:hover {
 }
 @media (680px <= width < 800px) {
   header {
+    -webkit-box-shadow: 0px 8px 6px -6px #333;
+            box-shadow: 0px 8px 6px -6px #333;
     position: sticky;
     top: 0;
     width: 100%;
@@ -240,6 +242,10 @@ header .desktop-menu ul li:hover {
   }
 }
 @media (width >= 890px) {
+  header {
+    -webkit-box-shadow: 0px 8px 6px -6px #333;
+            box-shadow: 0px 8px 6px -6px #333;
+  }
   header #desktop-navbar .desktop-menu ul li {
     font-size: 0.9rem;
     height: 100%;

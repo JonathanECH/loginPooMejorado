@@ -3,6 +3,10 @@
 
 session_start();
 require_once '../classes/user.php';
+// TEMPORAL: Verifica si el controlador se ejecuta
+file_put_contents('debug_log.txt', 'Controlador ejecutado: ' . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
+// TEMPORAL: Muestra qué acción se recibió
+file_put_contents('debug_log.txt', 'Acción recibida: ' . ($_POST['action'] ?? 'NULA') . "\n", FILE_APPEND);
 
 class UserController
 {
@@ -11,7 +15,7 @@ class UserController
 
     public function __construct(User $userModel)
     {
-        $this->userModel = $userModel;
+        $this->userModel = $userModel; 
     }
 
     // ----------------------------------------------------
@@ -29,14 +33,20 @@ class UserController
         if (empty($nombre))
             $errors[] = "Error: El nombre no puede estar vacío.";
 
+        if (strlen($nombre) < 3 || strlen($nombre) > 64)
+            $errors[] = "Error: El nombre debe tener entre 3 y 64 caracteres.";
+
         // Valido si el email no es valido, para luego validad si existe
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = "Error: Formato de email inválido.";
         } else {
+            if (strlen($email) > 254)
+                $errors[] = "Error: El correo electrónico es demasiado largo.";
             // Verifico si el email ya existe
             if ($this->userModel->emailExists($email))
                 $errors[] = "Error: El correo electrónico ya está registrado.";
         }
+
 
         if (strlen($password_original) < 6)  // Ejemplo de otra validación
             $errors[] = "Error: La contraseña debe tener al menos 6 caracteres.";
@@ -71,9 +81,61 @@ class UserController
         exit;
     }
 
-    // ----------------------------------------------------
-    // 2. Método para manejar la actualización
-    // ----------------------------------------------------
+    private function handleLogin()
+    {
+        // 1. Recolección de datos
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
+
+        // 2. Ejecutar la lógica de la clase User (Modelo)
+        $loginData = $this->userModel->login($email, $password); // Llama a User::login()
+
+        if ($loginData !== false) {
+            // Éxito: Iniciar sesión y redirigir al dashboard
+            $_SESSION['usuario'] = $loginData['usuario'];
+            $_SESSION['user_id'] = $loginData['user_id'];
+            header("Location: ../../views/dashboard.php");
+            exit;
+        }
+
+        // Fracaso: Redirigir al login con un mensaje de error
+        $_SESSION['error_login'] = "Correo o contraseña incorrectos. Por favor, intente de nuevo.";
+        header("Location: ../../views/login.php");
+        exit;
+    }
+
+    private function handleLogout()
+    {
+        // 1. Limpiar variables específicas de la sesión
+        unset($_SESSION['user_id']);
+        unset($_SESSION['usuario']);
+
+        // 2. Eliminar TODAS las variables de sesión
+        $_SESSION = [];
+
+        // 3. Invalidar la cookie de sesión
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                '',
+                time() - 42000,
+                $params["path"],
+                $params["domain"],
+                $params["secure"],
+                $params["httponly"]
+            );
+        }
+
+        // 4. Destruir la sesión en el servidor
+        session_destroy();
+
+        // 5. Redirigir a la página de inicio de sesión
+        header("Location: ../../views/login.php");
+        exit;
+    }
+
+    //Método del controlador para actualizar datos del usuario
     private function handleUpdate()
     {
         $email = $_POST['email'];
@@ -113,6 +175,7 @@ class UserController
         exit;
     }
 
+    //Metodo para determinar la acción a ejecutar según la ruta
     public function routeAction($action)
     {
         switch ($action) {
@@ -122,6 +185,11 @@ class UserController
             case "update":
                 $this->handleUpdate();
                 break;
+            case "login":
+                $this->handleLogin();
+                break;
+            case "logout":
+                $this->handleLogout();
             default:
                 $_SESSION['error_login'] = "Acción no reconocida.";
                 header("Location: ../../views/login.php");

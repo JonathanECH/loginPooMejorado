@@ -1,0 +1,32 @@
+Controlador ejecutado: 2025-11-27 21:22:57
+Acción recibida: NULA
+Controlador ejecutado: 2025-11-27 21:24:30
+Acción recibida: register
+Controlador ejecutado: 2025-11-27 21:24:49
+Acción recibida: register
+Controlador ejecutado: 2025-11-27 21:25:20
+Acción recibida: register
+Controlador ejecutado: 2025-11-27 21:31:19
+Acción recibida: register
+Controlador ejecutado: 2025-11-27 21:33:05
+Acción recibida: register
+Controlador ejecutado: 2025-11-27 21:33:24
+Acción recibida: register
+Controlador ejecutado: 2025-11-27 21:33:49
+Acción recibida: register
+Controlador ejecutado: 2025-11-27 21:45:00
+Acción recibida: register
+Controlador ejecutado: 2025-11-27 21:45:05
+Acción recibida: register
+Controlador ejecutado: 2025-11-27 21:45:41
+Acción recibida: login
+Controlador ejecutado: 2025-11-27 21:45:51
+Acción recibida: login
+Controlador ejecutado: 2025-11-27 21:46:01
+Acción recibida: login
+Controlador ejecutado: 2025-11-27 21:50:24
+Acción recibida: register
+Controlador ejecutado: 2025-11-27 21:50:49
+Acción recibida: register
+Controlador ejecutado: 2025-11-27 22:09:18
+Acción recibida: register

@@ -3,5 +3,5 @@ RewriteEngine On
 
 # Si el usuario solicita el directorio raíz (por ejemplo, /auth_php/)
 # Y no existe un archivo index.php, index.html, etc.
-# Redirige internamente a login.php
-RewriteRule ^$ login.php [L]
+# Redirige internamente a dashboard.php
+RewriteRule ^$ dashboard.php [L]

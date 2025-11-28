@@ -14,7 +14,7 @@ a {
     /* -webkit-text-stroke-width: 0.2px;
     -webkit-text-stroke-color: white; */
     font-weight: bold;
-    color: var(--primary-color);
+    color: var(--blank-color);
     text-decoration: none;
 }
 .testimonial-section h2 {
