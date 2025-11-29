@@ -168,8 +168,17 @@ class UserController
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Asegúrate de que requires_central.php haya cargado la clase Database y User
+    require_once '../../../src/php/requires_central.php';
 
-    $userModel = new User();
+    // 1. Conexión a la base de datos
+    $db = new Database();
+    $connection = $db->getConnection(); // Obtiene el objeto mysqli/PDO
+
+    // 2. Aplicamos la conexión al modelo
+    $userModel = new User($connection); // <- CAMBIO AQUÍ
+
+    // 3. Pasamos el modelo al controlador
     $controller = new UserController($userModel);
 
     $action = $_POST["action"] ?? '';

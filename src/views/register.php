@@ -1,7 +1,5 @@
 <?php
 session_start();
-require_once '../php/models/user.php';
-
 // if (isset($_SESSION['user_id'])) {
 //   header("Location: dashboard.php");
 //   exit;
@@ -74,7 +72,6 @@ unset($_SESSION['form_data']);
       <p>¿Ya tienes una cuenta? <a href="login.php">Inicia sesión</a></p>
     </div>
   </div>
-  </form>
 </body>
 
 </html>
