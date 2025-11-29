@@ -40,3 +40,33 @@ Controlador ejecutado: 2025-11-29 23:09:40
 Acción recibida: login
 Controlador ejecutado: 2025-11-29 23:10:08
 Acción recibida: login
+Controlador ejecutado: 2025-11-29 23:57:01
+Acción recibida: login
+Controlador ejecutado: 2025-11-29 23:57:53
+Acción recibida: login
+Controlador ejecutado: 2025-11-29 23:58:28
+Acción recibida: login
+Controlador ejecutado: 2025-11-29 23:58:59
+Acción recibida: login
+Controlador ejecutado: 2025-11-29 23:59:05
+Acción recibida: login
+Controlador ejecutado: 2025-11-29 23:59:19
+Acción recibida: login
+Controlador ejecutado: 2025-11-30 00:01:38
+Acción recibida: logout
+Controlador ejecutado: 2025-11-30 00:02:05
+Acción recibida: logout
+Controlador ejecutado: 2025-11-30 00:03:44
+Acción recibida: register
+Controlador ejecutado: 2025-11-30 00:04:01
+Acción recibida: login
+Controlador ejecutado: 2025-11-30 00:04:05
+Acción recibida: login
+Controlador ejecutado: 2025-11-30 00:04:10
+Acción recibida: logout
+Controlador ejecutado: 2025-11-30 00:04:28
+Acción recibida: register
+Controlador ejecutado: 2025-11-30 00:04:51
+Acción recibida: register
+Controlador ejecutado: 2025-11-30 00:05:04
+Acción recibida: register

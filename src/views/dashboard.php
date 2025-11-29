@@ -86,6 +86,10 @@ if (isset($_SESSION['update_error'])) {
     <button id="mobile-menu-btn">☰</button>
   </header>
   <main>
+    <form action="../php/controllers/UserController.php" method="POST">
+      <input type="hidden" name="action" value="logout">
+      <button type="submit" class="logout-btn">Cerrar Sesión</button>
+    </form>
     <section id="sobrenosotros-view" class="content-view content-container sobrenosotros" style="display:none;">
       <h1 class="page-title">Conoce a Lubriken</h1>
       <hr>

@@ -1,8 +1,7 @@
 <?php
 // src/php/controllers/UserController.php
-
 session_start();
-require_once '../models/user.php';
+require_once '../../../src/php/requires_central.php';
 // TEMPORAL: Verifica si el controlador se ejecuta
 file_put_contents('debug_log.txt', 'Controlador ejecutado: ' . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
 // TEMPORAL: Muestra qué acción se recibió
@@ -12,9 +11,11 @@ class UserController
 {
 
     private $userModel;
+    private $validator;
     public function __construct(User $userModel)
     {
-        $this->userModel = $userModel; 
+        $this->userModel = $userModel;
+        $this->validator = new UserValidator($userModel);
     }
 
     // ----------------------------------------------------
@@ -22,60 +23,28 @@ class UserController
     // ----------------------------------------------------
     private function handleRegister()
     {
-        $errors = [];
+        // 1. Delegar toda la validación al servicio
+        $errors = $this->validator->validateRegistration($_POST);
+
+        // Recolectar datos sanitizados para la DB o crudos para rellenar formulario
         $nombre = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
         $password_original = $_POST['password'];
-        $password_confirm = $_POST['confirmPassword'];
 
-        // Verifico los campos del formulario
-        if (empty($nombre))
-            $errors[] = "Error: El nombre no puede estar vacío.";
-
-        if (strlen($nombre) < 3 || strlen($nombre) > 64)
-            $errors[] = "Error: El nombre debe tener entre 3 y 64 caracteres.";
-
-        // Valido si el email no es valido, para luego validad si existe
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = "Error: Formato de email inválido.";
-        } else {
-            if (strlen($email) > 254)
-                $errors[] = "Error: El correo electrónico es demasiado largo.";
-            // Verifico si el email ya existe
-            if ($this->userModel->emailExists($email))
-                $errors[] = "Error: El correo electrónico ya está registrado.";
-        }
-
-
-        if (strlen($password_original) < 6)  // Ejemplo de otra validación
-            $errors[] = "Error: La contraseña debe tener al menos 6 caracteres.";
-
-        if ($password_original !== $password_confirm)
-            $errors[] = "Error: Las contraseñas no coinciden.";
-
-        // 3. Llamar al método SOLO si no hay errores locales.
+        // 2. Llamar al método SOLO si no hay errores
         if (empty($errors)) {
-            // La instancia $userModel ya existe
-            // Nota: Solo pasamos $password_original, ya que la validación de confirmación se hizo arriba.
-            $result = $this->userModel->register($nombre, $email, $password_original); // Llama a User::register()
+            $result = $this->userModel->register($nombre, $email, $password_original);
 
             if ($result === true) {
                 header("Location: ../../views/login.php?register=success");
                 exit;
             }
-            // Captura el error de duplicado (1062) si la base de datos lo detecta
-            $errors[] = $result;
+            $errors[] = $result; // Captura el error de la DB
         }
 
-        // 4. Salida Única de Fracaso: Guardar TODOS los errores recolectados
-
-        // Guardar errores y datos del formulario en la sesión
+        // 3. Salida de Fracaso
         $_SESSION['errors'] = $errors;
-        $_SESSION['form_data'] = [
-            'nombre' => $nombre,
-            'email' => $email
-        ];
-        // Redirigir al formulario de registro al haber fallado la validación
+        $_SESSION['form_data'] = ['nombre' => $nombre, 'email' => $email];
         header("Location: ../../views/register.php");
         exit;
     }
@@ -137,38 +106,38 @@ class UserController
     //Método del controlador para actualizar datos del usuario
     private function handleUpdate()
     {
-        $email = $_POST['email'];
-        // AGREGAR: Validación de formato de email en el Controlador
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $_SESSION['update_error'] = "Error: Formato de email inválido.";
-            header("Location: ../../views/dashboard.php?update=fail");
-            exit;
-        }
-
+        // Asegurarse de que el usuario esté logueado
         if (!isset($_SESSION['user_id'])) {
-            //Mando un mensaje de error por acceso no autorizado
             $_SESSION['error_login'] = "Acceso denegado. Debes iniciar sesión para actualizar tu perfil.";
-
-            //Reedirigir a la pagina de login
             header("Location: ../../views/login.php");
             exit;
         }
 
-        // 2. Recolección de datos
         $id = $_SESSION['user_id'];
+
+        // 1. Delegar la validación al servicio
+        $errors = $this->validator->validateUpdate($id, $_POST);
+
+        $email = $_POST['email'];
         $nombre = $_POST['nombre'];
 
-        // 3. Ejecutar la lógica de la clase User
+        if (!empty($errors)) {
+            // Fracaso en la validación local
+            $_SESSION['update_error'] = implode(' ', $errors); // Une los errores para el mensaje
+            header("Location: ../../views/dashboard.php?update=fail");
+            exit;
+        }
+
+        // 2. Ejecutar la lógica del modelo
         $result = $this->userModel->update($id, $nombre, $email);
 
         if ($result === true) {
-            // Éxito: Actualizar el nombre en la sesión y redirigir
             $_SESSION['usuario'] = $nombre;
             header("Location: ../../views/dashboard.php?update=success");
             exit;
         }
 
-        // Fracaso: Muestra el error devuelto por el modelo
+        // Fracaso del modelo
         $_SESSION['update_error'] = $result;
         header("Location: ../../views/dashboard.php?update=fail");
         exit;
