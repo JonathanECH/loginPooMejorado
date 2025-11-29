@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../php/classes/user.php';
+require_once '../php/models/user.php';
 
 // if (isset($_SESSION['user_id'])) {
 //   header("Location: dashboard.php");

@@ -1,7 +1,7 @@
 <?php
 // src/php/dashboard.php (Refactorizado para usar User::getUserDataById)
 session_start();
-require_once '../php/classes/user.php';
+require_once '../php/models/user.php';
 
 // 1. Guardia de seguridad: Asegura que el usuario esté logueado
 if (!isset($_SESSION['user_id'])) {

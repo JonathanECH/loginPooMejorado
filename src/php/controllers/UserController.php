@@ -2,7 +2,7 @@
 // src/php/controllers/UserController.php
 
 session_start();
-require_once '../classes/user.php';
+require_once '../models/user.php';
 // TEMPORAL: Verifica si el controlador se ejecuta
 file_put_contents('debug_log.txt', 'Controlador ejecutado: ' . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
 // TEMPORAL: Muestra qué acción se recibió
@@ -12,7 +12,6 @@ class UserController
 {
 
     private $userModel;
-
     public function __construct(User $userModel)
     {
         $this->userModel = $userModel; 
@@ -190,6 +189,7 @@ class UserController
                 break;
             case "logout":
                 $this->handleLogout();
+                break;
             default:
                 $_SESSION['error_login'] = "Acción no reconocida.";
                 header("Location: ../../views/login.php");
