@@ -19,19 +19,24 @@ class User
     {
         $stmt = $this->conn->prepare($sql);
 
-        // 1. Manejo de error de PREPARACIÓN (Devuelve string si falla)
+        // 1. Manejo de error de PREPARACIÓN
         if ($stmt === false) {
-            // En producción, solo loguear el error y devolver 'false'
             return "Error de preparación de SELECT: " . $this->conn->error;
         }
 
-        // 2. Manejo de error de BINDING
-        if (!empty($params) && !$stmt->bind_param($types, ...$params)) {
-            $stmt->close();
-            return "Error de enlace de parámetros (bind_param): {$stmt->error}";
+        // 2. ENLACE Y MANEJO DE ERROR DE BINDING (ÚNICO BLOQUE)
+        // Solo se llama a bind_param si hay tipos y parámetros.
+        if (!empty($types) && !empty($params)) {
+            // Ejecutamos bind_param y verificamos si falló (retorna false)
+            if (!$stmt->bind_param($types, ...$params)) {
+                $stmt->close();
+                // Usamos $this->conn->error si $stmt->error está vacío después de un fallo de bind.
+                $error = $stmt->error ?: $this->conn->error;
+                return "Error de enlace de parámetros (bind_param): {$error}";
+            }
         }
 
-        // 3. Manejo de error de EJECUCIÓN
+        // 3. Manejo de error de EJECUCIÓN (Lógica correcta, se mantiene)
         if (!$stmt->execute()) {
             $error_message = $stmt->error;
             $stmt->close();
@@ -41,13 +46,12 @@ class User
         $result = $stmt->get_result();
         $stmt->close();
 
-        // Devolvemos el objeto mysqli_result o null si no hay resultado (get_result puede devolver null)
         return $result;
     }
 
     /**
      * Helper para ejecutar modificaciones(INSERT, UPDATE, DELETE).
-     * @return bool|int True si éxito, el código de error 1062 para duplicados.
+     * @return bool|int|string True si éxito, el código de error 1062 para duplicados.
      */
     private function runDmlStatement(string $sql, string $types, ...$params): bool|int|string
     {
@@ -55,32 +59,36 @@ class User
 
         // Si la preparación de la sentencia falla
         if ($stmt === false) {
-            // Devuelve el mensaje de error de MySQLi, que es más útil que un simple 'false'
             return "Error de preparación: {$this->conn->error}";
         }
 
-        $stmt->bind_param($types, ...$params);
+        // APLICACIÓN DE LA CLÁUSULA DE GUARDA PARA EVITAR BIND_PARAM EN QUERIES SIN PARÁMETROS
+        if (!empty($types) && !empty($params)) {
+            // Ejecutamos bind_param y verificamos si falló
+            if (!$stmt->bind_param($types, ...$params)) {
+                $stmt->close();
+                // Usamos $this->conn->error si $stmt->error está vacío
+                $error = $stmt->error ?: $this->conn->error;
+                return "Error de enlace de parámetros (bind_param): {$error}";
+            }
+        }
 
         // Si la ejecución es exitosa
         if ($stmt->execute()) {
+            $filas_afectadas = $this->conn->affected_rows; // <-- Capturar filas afectadas
             $stmt->close();
-            return true;
+            return $filas_afectadas; // <-- Devolvemos el número de filas (0 o más)
         }
 
-        // Si la ejecución falla, capturamos el código y el mensaje.
+        // ... (El resto del manejo de errores 1062 y genéricos es correcto)
         $error_code = $this->conn->errno;
         $error_message = $this->conn->error;
         $stmt->close();
 
-        // Revisamos el error 1062 (Duplicate entry for unique key)
         if ($error_code === 1062) {
-            // Devolvemos el código numérico para que el Controlador lo maneje específicamente.
             return 1062;
         }
 
-        // Fallo genérico: Devolvemos el mensaje de error SQL.
-        // OJO: En un entorno de producción final, querrías loguear este error 
-        // y devolver un mensaje genérico al usuario (ej: "Error interno del sistema").
         return "Error de ejecución: {$error_message}";
     }
 
@@ -100,6 +108,84 @@ class User
         return $result && $result->num_rows > 0;
     }
 
+    public function checkAndProcessIpBlock(string $ip, int $maxAttempts): bool|string
+    {
+        // 1. Eliminar entradas antiguas expiradas (Mantenimiento)
+        $sql_delete = "DELETE FROM failing_attempts_ip WHERE block_time < NOW() AND block_time IS NOT NULL";
+        $this->runDmlStatement($sql_delete, "");
+
+        // 2. Obtener registro de la IP actual
+        $sql_select = "SELECT failed_attempts, block_time FROM failing_attempts_ip WHERE ip_address = ?";
+        $result = $this->runSelectStatement($sql_select, "s", $ip);
+
+        if (is_string($result) || $result->num_rows === 0) {
+            return true;
+        }
+
+        $row = $result->fetch_assoc();
+
+        // 3. CHEQUEAR BLOQUEO ACTIVO
+        if ($row['block_time'] && strtotime($row['block_time']) > time()) {
+            $tiempo_restante = strtotime($row['block_time']) - time();
+            $minutos = ceil($tiempo_restante / 60);
+            return "Tu IP está bloqueada. Intenta de nuevo en aproximadamente {$minutos} minutos.";
+        }
+
+        // 4. RESETEAR CONTADOR si el bloqueo expiró (Doble chequeo, aunque el DELETE ya lo maneja)
+        if (
+            $row['failed_attempts'] > 0 &&
+            $row['block_time'] && strtotime($row['block_time']) < time()
+        ) {
+
+            $sql_reset = "UPDATE failing_attempts_ip SET failed_attempts = 0, block_time = NULL WHERE ip_address = ?";
+            $this->runDmlStatement($sql_reset, "s", $ip);
+        }
+
+        return true;
+    }
+
+
+    public function incrementIpAttempt(string $ip, int $lockoutMinutes)
+    {
+        $MAX_ATTEMPTS = 3;
+
+        // 1. Intentar actualizar el contador (si ya existe)
+        $sql_update = "UPDATE failing_attempts_ip SET failed_attempts = failed_attempts + 1 
+                   WHERE ip_address = ?";
+        $affected_rows = $this->runDmlStatement($sql_update, "s", $ip); // <-- Retorna INT (0 o 1)
+
+        // 2. Si affected_rows es CERO, significa que el registro NO existía (primer fallo)
+        if ($affected_rows === 0) {
+            // Intentar insertar la nueva IP (primer fallo)
+            $sql_insert = "INSERT INTO failing_attempts_ip (ip_address, failed_attempts) VALUES (?, 1)";
+            // No necesitamos el resultado aquí, solo lo ejecutamos
+            $this->runDmlStatement($sql_insert, "s", $ip);
+        }
+        // Si affected_rows es una cadena (error de DB), la verificación 
+        // en el paso 3 se encargará de esto.
+
+        // 3. Revisar el estado y aplicar el bloqueo si se excede el límite
+        $sql_check = "SELECT failed_attempts FROM failing_attempts_ip WHERE ip_address = ?";
+        $result_check = $this->runSelectStatement($sql_check, "s", $ip);
+
+        if (!is_string($result_check) && $result_check->num_rows > 0) {
+            $attempts = $result_check->fetch_assoc()['failed_attempts'];
+
+            if ($attempts >= $MAX_ATTEMPTS) {
+                // Aplicar el bloqueo por la duración especificada
+                $lockout_time = date('Y-m-d H:i:s', strtotime("+{$lockoutMinutes} minutes"));
+                $sql_lock = "UPDATE failing_attempts_ip SET block_time = ? WHERE ip_address = ?";
+                $this->runDmlStatement($sql_lock, "ss", $lockout_time, $ip);
+            }
+        }
+    }
+
+    public function clearIpAttempts(string $ip)
+    {
+        // Usa DELETE para eliminar el registro de intentos fallidos de la IP, reseteando el contador.
+        $sql = "DELETE FROM failing_attempts_ip WHERE ip_address = ?";
+        $this->runDmlStatement($sql, "s", $ip);
+    }
     // FUNCIONES DE CRUD DE USUARIO
 
     /**

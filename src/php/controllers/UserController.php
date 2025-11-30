@@ -51,21 +51,33 @@ class UserController
 
     private function handleLogin()
     {
-        $contador = $_SESSION['contador'] ?? 0;
-        if($contador > 3){
-            $_SESSION['error_login'] = "Demasiados intentos fallidos. Por favor, intente de nuevo más tarde.";
+        // Obtener la IP del cliente (Nota: En producción, usa $_SERVER['HTTP_X_FORWARDED_FOR'] 
+        // si estás detrás de un proxy/load balancer, si no, usa REMOTE_ADDR)
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $MAX_ATTEMPTS = 3;
+        $LOCKOUT_MINUTES = 5;
+
+        // 1. Verificar el estado actual del bloqueo por IP en el Modelo
+        // El modelo devolverá true, o un mensaje de error si está bloqueado.
+        $lock_status = $this->userModel->checkAndProcessIpBlock($ip, $MAX_ATTEMPTS);
+
+        if (is_string($lock_status)) {
+            // Bloqueo Activo: Se devuelve el mensaje de error de bloqueo.
+            $_SESSION['error_login'] = $lock_status;
             header("Location: ../../views/login.php");
             exit;
         }
+
         // 1. Recolección de datos
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
-
-        // 2. Ejecutar la lógica de la clase User (Modelo)
-        $loginData = $this->userModel->login($email, $password); // Llama a User::login()
+        // --- 2. Ejecutar la lógica de la clase User (Modelo) ---
+        $loginData = $this->userModel->login($email, $password);
 
         if ($loginData !== false) {
-            // Éxito: Iniciar sesión y redirigir al dashboard
+            // Éxito: Limpiar el registro de fallos de esta IP
+            $this->userModel->clearIpAttempts($ip);
+
             $_SESSION['usuario'] = $loginData['usuario'];
             $_SESSION['user_id'] = $loginData['user_id'];
             $_SESSION['user_rol'] = $loginData['rol'];
@@ -73,9 +85,9 @@ class UserController
             exit;
         }
 
-        $contador++;
-        $_SESSION['contador'] = $contador;
-        // Fracaso: Redirigir al login con un mensaje de error
+        // --- Fracaso: Incrementar contador y aplicar bloqueo si se excede el límite ---
+        $this->userModel->incrementIpAttempt($ip, $LOCKOUT_MINUTES);
+
         $_SESSION['error_login'] = "Correo o contraseña incorrectos. Por favor, intente de nuevo.";
         header("Location: ../../views/login.php");
         exit;
