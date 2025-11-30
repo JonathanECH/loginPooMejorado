@@ -51,6 +51,12 @@ class UserController
 
     private function handleLogin()
     {
+        $contador = $_SESSION['contador'] ?? 0;
+        if($contador > 3){
+            $_SESSION['error_login'] = "Demasiados intentos fallidos. Por favor, intente de nuevo más tarde.";
+            header("Location: ../../views/login.php");
+            exit;
+        }
         // 1. Recolección de datos
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
@@ -62,10 +68,13 @@ class UserController
             // Éxito: Iniciar sesión y redirigir al dashboard
             $_SESSION['usuario'] = $loginData['usuario'];
             $_SESSION['user_id'] = $loginData['user_id'];
+            $_SESSION['user_rol'] = $loginData['rol'];
             header("Location: ../../views/dashboard.php");
             exit;
         }
 
+        $contador++;
+        $_SESSION['contador'] = $contador;
         // Fracaso: Redirigir al login con un mensaje de error
         $_SESSION['error_login'] = "Correo o contraseña incorrectos. Por favor, intente de nuevo.";
         header("Location: ../../views/login.php");

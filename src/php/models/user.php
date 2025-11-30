@@ -152,7 +152,7 @@ class User
     public function login($email, $password)
     {
         // Se usa el método modularizado para SELECT
-        $sql = "SELECT id, nombre, contrasenna FROM usuarios WHERE email = ?";
+        $sql = "SELECT id, nombre, contrasenna, rol FROM usuarios WHERE email = ?";
         $result = $this->runSelectStatement($sql, "s", $email);
 
         // 1. Manejo de Error de DB
@@ -173,7 +173,11 @@ class User
 
         // 4. Verificación de Contraseña
         if (password_verify($password, $row['contrasenna']))
-            return ['user_id' => $row['id'], 'usuario' => $row['nombre']]; // Salida de Éxito
+            return [
+                'user_id' => $row['id'],
+                'usuario' => $row['nombre'],
+                'rol' => $row['rol']
+            ]; // Salida de Éxito
 
         // 5. Salida de Fracaso: Si la contraseña no es válida.
         return false;
