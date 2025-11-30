@@ -40,6 +40,7 @@ if (isset($_SESSION['update_error'])) {
   <link rel="stylesheet" href="../styles/css/testimonials.css">
   <link rel="stylesheet" id="sobrenosotros-style" href="../styles/css/section-sobrenosotros.css">
   <link rel="stylesheet" href="../styles/css/preguntas.css">
+  <link rel="stylesheet" href="../styles/css/ContactForm.css">
   <title>Dashboard</title>
 </head>
 
@@ -54,6 +55,7 @@ if (isset($_SESSION['update_error'])) {
           <li><a href="#productos">Nuestros Productos</a></li>
           <li><a href="#testimonios">testimonial de pasantias</a></li>
           <li><a href="#preguntas">FAQs</a></li>
+          <li><a href="#formulario-contacto">Contacto</a></li>
           <?php if (isset($_SESSION['usuario'])): ?>
             <li class="user-menu-item">
               <a href="#perfil" id="user-name-link"><?php echo $nombre_usuario; ?></a>
@@ -72,6 +74,7 @@ if (isset($_SESSION['update_error'])) {
           <li><a href="#productos">Nuestros Productos</a></li>
           <li><a href="#testimonios">testimonial de pasantias</a></li>
           <li><a href="#preguntas">FAQs</a></li>
+          <li><a href="#formulario-contacto">Contacto</a></li>
           <?php if (isset($_SESSION['usuario'])): ?>
             <li class="user-menu-item">
               <a href="#perfil" id="user-name-link"><?php echo $nombre_usuario; ?></a>
@@ -255,6 +258,35 @@ if (isset($_SESSION['update_error'])) {
 
     </section>
     <!--Preguntas frecuentes-->
+    <section id="formulario-contacto" class="container-form">
+      <h2 class="container-form__title">Formulario de contacto</h2>
+      <form class="container-form__form" action="" method="POST">
+
+        <div class="container-form__div">
+          <label for="nombre_contacto">Nombre</label>
+          <input type="text" id="nombre_contacto" placeholder="Nombre">
+        </div>
+
+        <div class="container-form__div">
+          <label for="numero_contacto">Numero</label>
+          <input type="number" id="numero_contacto" placeholder="Numero" min="1">
+        </div>
+
+        <div class="container-form__div">
+          <label for="correo_contacto">Correo</label>
+          <input type="email" id="correo_contacto" placeholder="Correo">
+        </div>
+
+        <div class="container-form__div">
+          <label for="mensaje_contacto">Mensaje</label>
+          <textarea name="mensaje_contacto" id="mensaje_contacto" placeholder="Deja un mensaje"></textarea>
+        </div>
+
+        <div class="container-form__div container-form__submit alinear-derecha">
+          <button type="submit">Enviar</button>
+        </div>
+      </form>
+    </section>
   </main>
   <footer>
     <section class="footer-content">
