@@ -28,6 +28,7 @@ unset($_SESSION['update_error']);
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../styles/css/globalStyles.css" />
+  <link rel="stylesheet" href="../styles/css/dark-mode.css">
   <link rel="stylesheet" href="../styles/css/userMenuHeader.css">
   <link rel="stylesheet" href="../styles/css/product.css">
   <link rel="stylesheet" href="../styles/css/testimonials.css">
@@ -49,6 +50,9 @@ unset($_SESSION['update_error']);
           <li><a href="#testimonios">testimonial de pasantias</a></li>
           <li><a href="#preguntas">FAQs</a></li>
           <li><a href="#formulario-contacto">Contacto</a></li>
+          <li>
+            <button id="theme-toggle-desktop" class="theme-btn" title="Cambiar tema">🌙</button>
+          </li>
           <?php if (isset($_SESSION['usuario'])): ?>
             <li class="user-menu-item">
               <a href="#perfil" id="user-name-link"><?php echo $nombre_usuario; ?></a>
@@ -68,6 +72,9 @@ unset($_SESSION['update_error']);
           <li><a href="#testimonios">testimonial de pasantias</a></li>
           <li><a href="#preguntas">FAQs</a></li>
           <li><a href="#formulario-contacto">Contacto</a></li>
+          <li>
+            <button id="theme-toggle-mobile" class="theme-btn" title="Cambiar tema">🌙</button>
+          </li>
           <?php if (isset($_SESSION['usuario'])): ?>
             <li class="user-menu-item">
               <a href="#perfil" id="user-name-link"><?php echo $nombre_usuario; ?></a>
@@ -118,7 +125,7 @@ unset($_SESSION['update_error']);
         $stock = $product['stock_actual'];
         $status_class = ($stock > 0) ? 'available' : 'sold-out';
         $status_text = ($stock > 0) ? 'DISPONIBLE (' . $stock . ' en stock)' : 'AGOTADO';
-        ?>
+      ?>
         <figure>
           <img src="<?php echo htmlspecialchars($product['imagen_url']); ?>"
             alt="<?php echo htmlspecialchars($product['nombre']); ?>" />
@@ -250,22 +257,22 @@ unset($_SESSION['update_error']);
 
         <div class="container-form__div">
           <label for="nombre_contacto">Nombre</label>
-          <input type="text" id="nombre_contacto" placeholder="Nombre">
+          <input class="container-form__campo" type="text" id="nombre_contacto" placeholder="Nombre">
         </div>
 
         <div class="container-form__div">
           <label for="numero_contacto">Numero</label>
-          <input type="number" id="numero_contacto" placeholder="Numero" min="1">
+          <input class="container-form__campo" type="number" id="numero_contacto" placeholder="Numero" min="1">
         </div>
 
         <div class="container-form__div">
           <label for="correo_contacto">Correo</label>
-          <input type="email" id="correo_contacto" placeholder="Correo">
+          <input class="container-form__campo" type="email" id="correo_contacto" placeholder="Correo">
         </div>
 
         <div class="container-form__div">
           <label for="mensaje_contacto">Mensaje</label>
-          <textarea name="mensaje_contacto" id="mensaje_contacto" placeholder="Deja un mensaje"></textarea>
+          <textarea class="container-form__campo" name="mensaje_contacto" id="mensaje_contacto" placeholder="Deja un mensaje"></textarea>
         </div>
 
         <div class="container-form__div container-form__submit alinear-derecha">
@@ -281,6 +288,7 @@ unset($_SESSION['update_error']);
     </section>
   </footer>
   <script src="../js/header-component.js"></script>
+  <script src="../js/theme.js"></script>
 </body>
 
 </html>
