@@ -1,32 +1,25 @@
 <?php
 // src/php/dashboard.php (Refactorizado para usar User::getUserDataById)
 session_start();
-//require_once '../php/classes/user.php';
+require_once '../php/requires_central.php';
+require_once '../php/models/ProductModel.php';
 
-// 1. Guardia de seguridad: Asegura que el usuario esté logueado
-// if (!isset($_SESSION['user_id'], $_SESSION['usuario'])) {
-//     // Si no está logueado, redirige
-//     header("Location: login.php");
-//     exit;
-// }
+$db = new Database();
+$connection = $db->getConnection();
+$productModel = new ProductModel($connection);
+$products = $productModel->getAllProducts();
+$product_error_message = is_string($products) ? $products : null;
+if (is_string($products))
+  $products = [];
 
-if (isset($_SESSION['user_id'], $_SESSION['usuario'])) {
-  $nombre_usuario = htmlspecialchars($_SESSION['usuario']);
-  $id_usuario = $_SESSION['user_id'];
-}
+// --- VARIABLES DE SESIÓN ---
+$nombre_usuario = $_SESSION['usuario'] ?? 'Invitado'; // Valor predeterminado
+$user_logged_in = isset($_SESSION['user_id']); // Simple flag
+$user_rol = $_SESSION['user_rol'] ?? 'cliente'; // Asume 'cliente' si no está logueado
 
-// Obtenemos el nombre del usuario directamente de la sesión para mostrarlo
-
-// Nota: El código comentado que obtiene datos de la DB cada vez NO es necesario solo para mostrar el nombre.
-// Lo mantienes comentado para evitar la carga innecesaria del modelo.
-
-//Obtención de mensajes de error de actualización
-$update_error_message = null;
-if (isset($_SESSION['update_error'])) {
-  $update_error_message = $_SESSION['update_error'];
-  //Se limpia la sesión para que el mensaje no se muestre al recargar
-  unset($_SESSION['update_error']);
-}
+// Manejo de errores de actualización...
+$update_error_message = $_SESSION['update_error'] ?? null;
+unset($_SESSION['update_error']);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -121,56 +114,49 @@ if (isset($_SESSION['update_error'])) {
     <!--PRODUCTOS-->
     <section id="productos" class="productos">
       <h2 class="productos-title">Productos</h2>
-      <figure>
-        <img src="../images/productos/aceite para carro inca.jpg" alt="aceite para carro inca" />
-        <figcaption>Aceite para carro Inca - 1 litro</figcaption>
-        <p>Precio:20$</p>
-        <a href="#" class="btn">Comprar</a>
-        <h3 class="status available">DISPONIBLE</h3>
-      </figure>
+      <?php foreach ($products as $product):
+        $stock = $product['stock_actual'];
+        $status_class = ($stock > 0) ? 'available' : 'sold-out';
+        $status_text = ($stock > 0) ? 'DISPONIBLE (' . $stock . ' en stock)' : 'AGOTADO';
+        ?>
+        <figure>
+          <img src="<?php echo htmlspecialchars($product['imagen_url']); ?>"
+            alt="<?php echo htmlspecialchars($product['nombre']); ?>" />
 
-      <figure>
-        <img src="../images/productos/filtros-MHW.png" alt="filtro mhw" />
-        <figcaption>Filtros MHW</figcaption>
-        <p>Precio:15$</p>
-        <a href="#" class="btn">Comprar</a>
-        <h3 class="status available">DISPONIBLE</h3>
-      </figure>
+          <figcaption><?php echo htmlspecialchars($product['nombre']); ?></figcaption>
+          <p><?php echo htmlspecialchars($product['descripcion'] ?? 'Sin descripción.'); ?></p>
+          <p>Precio: **<?php echo htmlspecialchars($product['precio']); ?>$**</p>
 
-      <figure>
-        <img src="../images/productos/base con bombin para filtros.jpg" alt="base con bombin para filtros" />
-        <figcaption>Base Con Bombin Para Filtros</figcaption>
-        <p>Precio:60$</p>
-        <a href="#" class="btn">Comprar</a>
-        <h3 class="status available">DISPONIBLE</h3>
-      </figure>
+          <?php if ($user_rol === 'administrador'): ?>
+            <form action="../php/controllers/ProductController.php" method="POST" class="admin-controls">
+              <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
 
-      <figure>
-        <img src="../images/productos/Filtros Combustible 3196.png" alt="Filtros Combustible 3196" />
-        <figcaption>Filtros Combustible 3196</figcaption>
-        <p>Precio:10$</p>
-        <a href="#" class="btn">Comprar</a>
-        <h3 class="status sold-out">AGOTADO</h3>
-      </figure>
+              <input type="number" name="new_stock" value="<?php echo $stock; ?>" min="0" style="width: 50px;">
+              <button type="submit" name="action" value="update_stock" class="btn admin-btn">Actualizar Stock</button>
+              <button type="submit" name="action" value="delete_product" class="btn admin-btn delete-btn">Eliminar</button>
+            </form>
 
-      <figure>
-        <img src="../images/productos/filtro-de-aceite-30dolares.png" alt="Filtros de aceite" />
-        <figcaption>Filtros De Aceite</figcaption>
-        <p>Precio:30$</p>
-        <a href="#" class="btn">Comprar</a>
-        <h3 class="status available">DISPONIBLE</h3>
-      </figure>
+          <?php else: ?>
+            <form action="../php/controllers/ProductController.php" method="POST">
+              <input type="hidden" name="action" value="add_to_cart">
+              <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
 
-      <figure>
-        <img src="../images/productos/Amortiguador Delantero Chevrolet Spark 96424026 Derecho (rh).webp"
-          alt="amortiguador" />
-        <figcaption>
-          Amortiguador Delantero Chevrolet Spark 96424026 Derecho
-        </figcaption>
-        <p>Precio:40$</p>
-        <a href="#" class="btn">Comprar</a>
-        <h3 class="status sold-out">AGOTADO</h3>
-      </figure>
+              <?php if ($user_logged_in): ?>
+                <input type="number" name="quantity" value="1" min="1" max="<?php echo $stock; ?>" <?php echo ($stock === 0) ? 'disabled' : ''; ?> style="width: 50px; text-align: center;">
+                <button type="submit" class="btn" <?php echo ($stock === 0) ? 'disabled' : ''; ?>>
+                  Reservar
+                </button>
+              <?php else: ?>
+                <a href="./login.php" class="btn">Iniciar Sesión para Reservar</a>
+              <?php endif; ?>
+            </form>
+
+          <?php endif; ?>
+          <h3 class="status <?php echo $status_class; ?>">
+            <?php echo $status_text; ?>
+          </h3>
+        </figure>
+      <?php endforeach; ?>
     </section>
     <h2 id="testimonio-pepon">Testimonios de Pasantía</h2>
     <section id="testimonios" class="testimonial-container">

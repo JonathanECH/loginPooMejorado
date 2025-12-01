@@ -1,95 +1,13 @@
 <?php
 require_once 'database.php';
+require_once 'DbModel.php';
 
-class User
+class User extends DbModel
 {
-    private $conn;
-
     public function __construct(mysqli $connection)
     {
-        // Inicializa la conexión a la DB a través de la clase Database
-        $this->conn = $connection;
-    }
-
-    /**
-     * Funcion que permite ejecutar consultas de lectura (Select).
-     * @return mysqli_result|bool El resultado o false en caso de fallo.
-     */
-    private function runSelectStatement(string $sql, string $types, ...$params): mysqli_result|string|null
-    {
-        $stmt = $this->conn->prepare($sql);
-
-        // 1. Manejo de error de PREPARACIÓN
-        if ($stmt === false) {
-            return "Error de preparación de SELECT: " . $this->conn->error;
-        }
-
-        // 2. ENLACE Y MANEJO DE ERROR DE BINDING (ÚNICO BLOQUE)
-        // Solo se llama a bind_param si hay tipos y parámetros.
-        if (!empty($types) && !empty($params)) {
-            // Ejecutamos bind_param y verificamos si falló (retorna false)
-            if (!$stmt->bind_param($types, ...$params)) {
-                $stmt->close();
-                // Usamos $this->conn->error si $stmt->error está vacío después de un fallo de bind.
-                $error = $stmt->error ?: $this->conn->error;
-                return "Error de enlace de parámetros (bind_param): {$error}";
-            }
-        }
-
-        // 3. Manejo de error de EJECUCIÓN (Lógica correcta, se mantiene)
-        if (!$stmt->execute()) {
-            $error_message = $stmt->error;
-            $stmt->close();
-            return "Error de ejecución de SELECT: " . $error_message;
-        }
-
-        $result = $stmt->get_result();
-        $stmt->close();
-
-        return $result;
-    }
-
-    /**
-     * Helper para ejecutar modificaciones(INSERT, UPDATE, DELETE).
-     * @return bool|int|string True si éxito, el código de error 1062 para duplicados.
-     */
-    private function runDmlStatement(string $sql, string $types, ...$params): bool|int|string
-    {
-        $stmt = $this->conn->prepare($sql);
-
-        // Si la preparación de la sentencia falla
-        if ($stmt === false) {
-            return "Error de preparación: {$this->conn->error}";
-        }
-
-        // APLICACIÓN DE LA CLÁUSULA DE GUARDA PARA EVITAR BIND_PARAM EN QUERIES SIN PARÁMETROS
-        if (!empty($types) && !empty($params)) {
-            // Ejecutamos bind_param y verificamos si falló
-            if (!$stmt->bind_param($types, ...$params)) {
-                $stmt->close();
-                // Usamos $this->conn->error si $stmt->error está vacío
-                $error = $stmt->error ?: $this->conn->error;
-                return "Error de enlace de parámetros (bind_param): {$error}";
-            }
-        }
-
-        // Si la ejecución es exitosa
-        if ($stmt->execute()) {
-            $filas_afectadas = $this->conn->affected_rows; // <-- Capturar filas afectadas
-            $stmt->close();
-            return $filas_afectadas; // <-- Devolvemos el número de filas (0 o más)
-        }
-
-        // ... (El resto del manejo de errores 1062 y genéricos es correcto)
-        $error_code = $this->conn->errno;
-        $error_message = $this->conn->error;
-        $stmt->close();
-
-        if ($error_code === 1062) {
-            return 1062;
-        }
-
-        return "Error de ejecución: {$error_message}";
+        // Esto es correcto y llama al constructor del padre (DbModel)
+        parent::__construct($connection);
     }
 
     //Saber si un email ya existe en la DB
@@ -222,15 +140,20 @@ class User
         $sql = "INSERT INTO usuarios (nombre, email, contrasenna) VALUES (?, ?, ?)";
         $result = $this->runDmlStatement($sql, "sss", $nombre, $email, $hashedPassword);
 
-        // 2. Salida Anticipada si es exitoso
-        if ($result === true)
-            return true;
+        // 2. Salida Anticipada si es exitoso (¡CAMBIO CRÍTICO AQUÍ!)
+        // Verificamos si $result es un número entero (filas afectadas) y si es mayor a 0.
+        if (is_int($result) && $result > 0) {
+            return true; // Éxito si se afectó al menos 1 fila
+        }
+
+        // Nota: El siguiente bloque (Paso 3) maneja el caso de error de duplicado (1062) 
+        // que es también un entero, pero tiene un valor específico.
 
         // 3. Manejo de error específico (1062 - Duplicado)
         if ($result === 1062)
             return "Error: El correo electrónico ya está registrado.";
 
-        // 4. Fallo genérico (cubre cualquier otro error, incluyendo el 'false' de la preparación)
+        // 4. Fallo genérico (cubre cualquier otro error, incluyendo cadenas de error de DB o $result === 0)
         return "Error al registrar usuario. Inténtelo de nuevo más tarde.";
     }
 
