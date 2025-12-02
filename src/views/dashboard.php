@@ -28,11 +28,10 @@ unset($_SESSION['update_error']);
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../styles/css/globalStyles.css" />
-  <link rel="stylesheet" href="../styles/css/dark-mode.css">
   <link rel="stylesheet" href="../styles/css/userMenuHeader.css">
+  <link rel="stylesheet" href="../styles/css/dark-mode.css">
   <link rel="stylesheet" href="../styles/css/product.css">
   <link rel="stylesheet" href="../styles/css/testimonials.css">
-  <link rel="stylesheet" id="sobrenosotros-style" href="../styles/css/section-sobrenosotros.css">
   <link rel="stylesheet" href="../styles/css/preguntas.css">
   <link rel="stylesheet" href="../styles/css/ContactForm.css">
   <title>Dashboard</title>
@@ -41,11 +40,11 @@ unset($_SESSION['update_error']);
 <body>
   <header id="navigation-bar">
     <section id="desktop-navbar">
-      <img src="../images/lubriken-log-o-type.png" alt="logotype" />
+      <a href="#"><img src="../images/lubriken-log-o-type.png" alt="logotype" /></a>
       <nav class="desktop-menu">
         <ul>
           <li><a href="#">Inicio</a></li>
-          <li><a href="#sobrenosotros-view">Sobre nosotros</a></li>
+          <li><a href="nosotros.php" target="_self">Sobre nosotros</a></li>
           <li><a href="#productos">Nuestros Productos</a></li>
           <li><a href="#testimonios">testimonial de pasantias</a></li>
           <li><a href="#preguntas">FAQs</a></li>
@@ -67,7 +66,7 @@ unset($_SESSION['update_error']);
       <nav id="mobile-menu">
         <ul>
           <li><a href="#">Inicio</a></li>
-          <li><a href="#sobrenosotros-view">Sobre nosotros</a></li>
+          <li><a href="nosotros.php">Sobre nosotros</a></li>
           <li><a href="#productos">Nuestros Productos</a></li>
           <li><a href="#testimonios">testimonial de pasantias</a></li>
           <li><a href="#preguntas">FAQs</a></li>
@@ -93,31 +92,7 @@ unset($_SESSION['update_error']);
       <input type="hidden" name="action" value="logout">
       <button type="submit" class="logout-btn">Cerrar Sesión</button>
     </form>
-    <section id="sobrenosotros-view" class="content-view content-container sobrenosotros" style="display:none;">
-      <h1 class="page-title">Conoce a Lubriken</h1>
-      <hr>
-
-      <section class="mission">
-        <h2>Nuestra Misión </h2>
-        <p>En Lubriken, nuestra misión es simplificar el mantenimiento y la protección de tus activos, ofreciendo
-          lubricantes y productos químicos de la más alta calidad.</p>
-      </section>
-
-      <section class="history">
-        <h2>Nuestra Historia </h2>
-        <p>Fundada en 2020, Lubriken nació de la necesidad de un servicio especializado y una entrega eficiente en el
-          sector industrial.</p>
-      </section>
-
-      <section class="values">
-        <h2>Nuestros Valores </h2>
-        <ul>
-          <li><strong>Calidad:</strong> Productos certificados y probados.</li>
-          <li><strong>Compromiso:</strong> Entrega rápida y atención al cliente.</li>
-          <li><strong>Innovación:</strong> Soluciones constantes.</li>
-        </ul>
-      </section>
-    </section>
+    
     <!--PRODUCTOS-->
     <section id="productos" class="productos">
       <h2 class="productos-title">Productos</h2>
