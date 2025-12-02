@@ -48,11 +48,10 @@ if ($user_logged_in && $user_rol !== 'administrador') {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../styles/css/globalStyles.css" />
-  <link rel="stylesheet" href="../styles/css/dark-mode.css">
   <link rel="stylesheet" href="../styles/css/userMenuHeader.css">
+  <link rel="stylesheet" href="../styles/css/dark-mode.css">
   <link rel="stylesheet" href="../styles/css/product.css">
   <link rel="stylesheet" href="../styles/css/testimonials.css">
-  <link rel="stylesheet" id="sobrenosotros-style" href="../styles/css/section-sobrenosotros.css">
   <link rel="stylesheet" href="../styles/css/preguntas.css">
   <link rel="stylesheet" href="../styles/css/ContactForm.css">
   <title>Dashboard</title>
@@ -61,11 +60,11 @@ if ($user_logged_in && $user_rol !== 'administrador') {
 <body>
   <header id="navigation-bar">
     <section id="desktop-navbar">
-      <img src="../images/lubriken-log-o-type.png" alt="logotype" />
+      <a href="#"><img src="../images/lubriken-log-o-type.png" alt="logotype" /></a>
       <nav class="desktop-menu">
         <ul>
           <li><a href="#">Inicio</a></li>
-          <li><a href="#sobrenosotros-view">Sobre nosotros</a></li>
+          <li><a href="nosotros.php" target="_self">Sobre nosotros</a></li>
           <li><a href="#productos">Nuestros Productos</a></li>
           <li><a href="#testimonios">testimonial de pasantias</a></li>
           <li><a href="#preguntas">FAQs</a></li>
@@ -84,8 +83,21 @@ if ($user_logged_in && $user_rol !== 'administrador') {
               </a>
             </li>
           <?php endif; ?>
-
-          <?php if ($user_logged_in): ?>
+        </ul>
+        </ul>
+      </nav>
+      <nav id="mobile-menu">
+        <ul>
+          <li><a href="#">Inicio</a></li>
+          <li><a href="nosotros.php">Sobre nosotros</a></li>
+          <li><a href="#productos">Nuestros Productos</a></li>
+          <li><a href="#testimonios">testimonial de pasantias</a></li>
+          <li><a href="#preguntas">FAQs</a></li>
+          <li><a href="#formulario-contacto">Contacto</a></li>
+          <li>
+            <button id="theme-toggle-mobile" class="theme-btn" title="Cambiar tema">🌙</button>
+          </li>
+          <?php if (isset($_SESSION['usuario'])): ?>
             <li class="user-menu-item">
               <a href="userdata.php" id="user-name-link"><?php echo $nombre_usuario; ?></a>
             </li>

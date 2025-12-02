@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Controlador ejecutado: 2025-11-27 21:22:57
 Acción recibida: NULA
 Controlador ejecutado: 2025-11-27 21:24:30
@@ -257,3 +258,5 @@ Controlador ejecutado: 2025-12-02 21:25:15
 Acción recibida: login
 Controlador ejecutado: 2025-12-02 22:51:21
 Acción recibida: logout
+=======
+>>>>>>> 7ba672861aaff0cbe31d67147eb840afd4bf257b
