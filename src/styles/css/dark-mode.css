@@ -1,0 +1,94 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+span,
+li {
+    color: var(--text-main);
+}
+
+.productos figure,
+.testimonial-card,
+.pregunta-card,
+.content-view,
+.container-form__form {
+    background-color: var(--bg-container) !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--input-border);
+    box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+.productos figure figcaption,
+.productos figure p,
+.testimonial-card blockquote,
+.author-name,
+.author-role,
+.pregunta-card h4,
+.pregunta-card p {
+    color: var(--text-main) !important;
+}
+
+footer,
+body.dark-mode footer p,
+body.dark-mode footer span,
+body.dark-mode footer a,
+body.dark-mode .footer-content p {
+    color: #ffffff !important;
+}
+
+/* ======================================================= */
+
+body.dark-mode {
+    --ternary-color: #1f2033;
+    --font-color: #ffffff;
+}
+
+body.dark-mode #productos,
+body.dark-mode #sobrenosotros-view,
+body.dark-mode .mission,
+body.dark-mode .history,
+body.dark-mode .values,
+body.dark-mode .container-form__form {
+    background-color: transparent !important;
+    color: var(--text-main) !important;
+}
+
+body.dark-mode .values ul li {
+    background-color: var(--bg-container) !important;
+    border: 1px solid var(--input-border);
+    color: var(--text-main) !important;
+    box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+body.dark-mode .mission,
+body.dark-mode .history,
+body.dark-mode .values,
+body.dark-mode .container-form__form {
+    background-color: var(--bg-container) !important;
+    color: var(--text-main) !important;
+    box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+body.dark-mode .container-form__form {
+    box-shadow: 0px 0px 18px 6px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .mission h2,
+body.dark-mode .history h2 {
+    color: var(--primary-color) !important;
+}
+
+body.dark-mode #sobrenosotros-view h1,
+body.dark-mode #sobrenosotros-view h2,
+body.dark-mode .faq-title,
+body.dark-mode .container-form__title,
+body.dark-mode #testimonio-pepon,
+body.dark-mode #productos h2 {
+    color: var(--primary-color) !important;
+}
+
+body.dark-mode #sobrenosotros-view p,
+body.dark-mode #sobrenosotros-view li {
+    color: var(--text-main) !important;
+}

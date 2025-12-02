@@ -194,9 +194,20 @@ Controlador ejecutado: 2025-12-01 01:31:17
 Acción recibida: login
 Controlador ejecutado: 2025-12-01 01:34:00
 Acción recibida: logout
+<<<<<<< HEAD
 Controlador ejecutado: 2025-12-01 02:52:11
 Acción recibida: logout
 Controlador ejecutado: 2025-12-01 03:08:42
 Acción recibida: login
 Controlador ejecutado: 2025-12-01 03:14:26
 Acción recibida: logout
+=======
+Controlador ejecutado: 2025-12-01 02:59:00
+Acción recibida: login
+Controlador ejecutado: 2025-12-01 12:25:17
+Acción recibida: logout
+Controlador ejecutado: 2025-12-01 12:25:32
+Acción recibida: login
+Controlador ejecutado: 2025-12-01 12:56:51
+Acción recibida: login
+>>>>>>> d8eca94238cd73e557f62c423fe43fef2bc23b1f
