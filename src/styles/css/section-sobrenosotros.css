@@ -29,13 +29,23 @@ hr {
 }
 
 /* Secciones y subtítulos */
-.content-container section {
+.content-container .mission-history,
+.values {
     background-color: #ffffff;
     padding: 35px;
     margin-bottom: 35px;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     border-left: 5px solid #0056b3;
+}
+
+.container-information {
+    background-color: #f7f7f7;
+    padding: 35px;
+    margin-bottom: 35px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border-left: none;
 }
 
 .content-container h2 {
@@ -55,11 +65,14 @@ hr {
 }
 
 /* tarjetas*/
+section.mission {
+    margin-bottom: 1rem;
+}
 
-.values {
+/* .values {
     border-left: none;
     background-color: #f7f7f7;
-}
+} */
 
 .values ul {
     list-style: none;
@@ -77,5 +90,12 @@ hr {
     padding: 30px;
     flex: 1 1 280px;
     text-align: center;
+}
 
+@media(max-width: 480px) {
+
+    .container-information h2,
+    p {
+        text-align: center;
+    }
 }
