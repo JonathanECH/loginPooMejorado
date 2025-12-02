@@ -260,3 +260,15 @@ Controlador ejecutado: 2025-12-02 22:51:21
 Acción recibida: logout
 =======
 >>>>>>> 7ba672861aaff0cbe31d67147eb840afd4bf257b
+Controlador ejecutado: 2025-12-02 23:15:36
+Acción recibida: logout
+Controlador ejecutado: 2025-12-02 23:15:40
+Acción recibida: login
+Controlador ejecutado: 2025-12-02 23:19:32
+Acción recibida: logout
+Controlador ejecutado: 2025-12-02 23:19:43
+Acción recibida: login
+Controlador ejecutado: 2025-12-02 23:19:49
+Acción recibida: logout
+Controlador ejecutado: 2025-12-02 23:19:57
+Acción recibida: login

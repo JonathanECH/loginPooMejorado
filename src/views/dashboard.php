@@ -72,7 +72,6 @@ if ($user_logged_in && $user_rol !== 'administrador') {
           <li>
             <button id="theme-toggle-desktop" class="theme-btn" title="Cambiar tema">🌙</button>
           </li>
-
           <?php if ($user_logged_in && $user_rol !== 'administrador'): ?>
             <li class="cart-icon-container">
               <a href="carrito.php" id="cart-link">
@@ -82,6 +81,13 @@ if ($user_logged_in && $user_rol !== 'administrador') {
                 <?php endif; ?>
               </a>
             </li>
+          <?php endif; ?>
+          <?php if (isset($_SESSION['usuario'])): ?>
+            <li class="user-menu-item">
+              <a href="userdata.php" id="user-name-link"><?php echo $nombre_usuario; ?></a>
+            </li>
+          <?php else: ?>
+            <li><a href="./login.php">Iniciar Sesión</a></li>
           <?php endif; ?>
         </ul>
         </ul>
@@ -97,6 +103,16 @@ if ($user_logged_in && $user_rol !== 'administrador') {
           <li>
             <button id="theme-toggle-mobile" class="theme-btn" title="Cambiar tema">🌙</button>
           </li>
+          <?php if ($user_logged_in && $user_rol !== 'administrador'): ?>
+            <li class="cart-icon-container">
+              <a href="carrito.php" id="cart-link">
+                🛒 Carrito
+                <?php if ($total_items_in_cart > 0): ?>
+                  <span class="cart-count">(<?php echo $total_items_in_cart; ?>)</span>
+                <?php endif; ?>
+              </a>
+            </li>
+          <?php endif; ?>
           <?php if (isset($_SESSION['usuario'])): ?>
             <li class="user-menu-item">
               <a href="userdata.php" id="user-name-link"><?php echo $nombre_usuario; ?></a>
