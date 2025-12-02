@@ -1,7 +1,7 @@
 <?php
 // src/php/dashboard.php (Refactorizado para usar User::getUserDataById)
 session_start();
-require_once '../php/models/user.php';
+require_once '../php/models/UserModel.php';
 
 // 1. Guardia de seguridad: Asegura que el usuario esté logueado
 if (!isset($_SESSION['user_id'])) {
@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id'])) {
 $id_usuario = $_SESSION['user_id'];
 
 // 2. Usar la clase para obtener los datos
-$userModel = new User();
+$userModel = new UserModel();
 $datos_usuario = $userModel->getUserDataById($id_usuario);
 
 if (!$datos_usuario) {

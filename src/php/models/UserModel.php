@@ -2,9 +2,9 @@
 require_once 'database.php';
 require_once 'DbModel.php';
 
-class User extends DbModel
+class UserModel extends DbModel
 {
-    
+
     public function __construct(mysqli $connection)
     {
         // Esto es correcto y llama al constructor del padre (DbModel)
@@ -27,7 +27,7 @@ class User extends DbModel
         return $result && $result->num_rows > 0;
     }
 
-    public function checkAndProcessIpBlock(string $ip, int $maxAttempts): bool|string
+    public function checkAndProcessIpBlock(string $ip): bool|string
     {
         // 1. Eliminar entradas antiguas expiradas (Mantenimiento)
         $sql_delete = "DELETE FROM failing_attempts_ip WHERE block_time < NOW() AND block_time IS NOT NULL";
@@ -193,44 +193,44 @@ class User extends DbModel
         return false;
     }
 
-    /** @return bool|string si fue exitoso, string si es error */
-    /* Se encarga de actualizar el usuario */
-    public function update($id, $nombre, $email)
+    // En src/php/models/User.php (Añadir este método)
+
+    /** @return bool|string True si fue exitoso, string si es error */
+    /* Se encarga de actualizar el nombre y la contraseña (opcional) */
+    public function updateProfile($id, $nombre, $password_new = null)
     {
-        // 1. Verificar si el email ya existe para OTRO usuario
-        $sql_check = "SELECT id FROM usuarios WHERE email = ? AND id != ?";
-        $result_check = $this->runSelectStatement($sql_check, "si", $email, $id);
+        // 1. Iniciar la consulta base (solo nombre)
+        $sql = "UPDATE usuarios SET nombre=? ";
+        $types = "si"; // Nombre (s) y ID (i)
+        $params = [$nombre, $id];
 
-        // 2. MANEJO DE ERRORES DEL SELECT DE VERIFICACIÓN
-        // Si $result_check es una cadena, significa que runSelectStatement() devolvió un error interno (preparación, ejecución, etc.).
-        if (is_string($result_check)) {
-            // Loguear el error $result_check. 
-            // Devolvemos un mensaje genérico al usuario en lugar del error detallado de SQL.
-            return "Error interno del sistema al verificar el correo electrónico. Intente más tarde.";
+        // 2. Si se proporciona una nueva contraseña, añadirla a la consulta
+        if ($password_new !== null && !empty($password_new)) {
+            $hashedPassword = password_hash($password_new, PASSWORD_DEFAULT);
+
+            $sql .= ", contrasenna=? "; // Añadir el campo de contraseña
+            $types = "ssi"; // Nuevo tipo: Nombre (s), Contraseña (s), ID (i)
+
+            // Insertar la contraseña hasheada ANTES del ID
+            array_splice($params, count($params) - 1, 0, $hashedPassword);
         }
 
-        // 3. CLÁUSULA DE GUARDA de LÓGICA DE NEGOCIO (Duplicado)
-        // Se ejecuta solo si $result_check es un objeto mysqli_result o null.
-        if ($result_check && $result_check->num_rows > 0) {
-            return "Error: El correo electrónico ya está registrado por otra cuenta.";
-        }
+        // 3. Finalizar la cláusula WHERE
+        $sql .= "WHERE id=?";
 
-        // 4. Ejecutar la actualización (DML)
-        $sql = "UPDATE usuarios SET nombre=?, email=? WHERE id=?";
-        $result = $this->runDmlStatement($sql, "ssi", $nombre, $email, $id);
+        // 4. Ejecutar la actualización
+        $result = $this->runDmlStatement($sql, $types, ...$params);
 
-        // 5. Manejo de resultados de DML
-        if ($result === true)
+        // 5. Manejo de resultados
+        if (is_int($result) && $result >= 0) { // Mayor o igual a 0, ya que 0 es 'sin cambios'
             return true;
+        }
 
-        if ($result === 1062)
-            return "Error: El nuevo correo electrónico ya está en uso por otro usuario.";
-
-        // Si $result es una cadena (error de preparación/ejecución de DML)
-        if (is_string($result))
+        if (is_string($result)) {
             return "Error interno del sistema al actualizar datos. Detalle: {$result}";
+        }
 
-        // Fallo genérico
-        return "Error al actualizar usuario. Intente de nuevo.";
+        // Devolvemos un mensaje genérico si el resultado es 0 o inesperado
+        return "No se realizaron cambios en el perfil.";
     }
 }

@@ -12,7 +12,7 @@ class UserController
 
     private $userModel;
     private $validator;
-    public function __construct(User $userModel)
+    public function __construct(UserModel $userModel)
     {
         $this->userModel = $userModel;
         $this->validator = new UserValidator($userModel);
@@ -59,7 +59,7 @@ class UserController
 
         // 1. Verificar el estado actual del bloqueo por IP en el Modelo
         // El modelo devolverá true, o un mensaje de error si está bloqueado.
-        $lock_status = $this->userModel->checkAndProcessIpBlock($ip, $MAX_ATTEMPTS);
+        $lock_status = $this->userModel->checkAndProcessIpBlock($ip);
 
         if (is_string($lock_status)) {
             // Bloqueo Activo: Se devuelve el mensaje de error de bloqueo.
@@ -127,7 +127,7 @@ class UserController
     //Método del controlador para actualizar datos del usuario
     private function handleUpdate()
     {
-        // Asegurarse de que el usuario esté logueado
+        // 1. Guardia de seguridad: Asegurar que el usuario esté logueado
         if (!isset($_SESSION['user_id'])) {
             $_SESSION['error_login'] = "Acceso denegado. Debes iniciar sesión para actualizar tu perfil.";
             header("Location: ../../views/login.php");
@@ -136,12 +136,16 @@ class UserController
 
         $id = $_SESSION['user_id'];
 
-        // 1. Delegar la validación al servicio
-        $errors = $this->validator->validateUpdate($id, $_POST);
+        // 2. Delegar la validación al servicio
+        // El validador (UserValidator) verificará el nombre (obligatorio) y la contraseña (opcional).
+        $errors = $this->validator->validateUpdate($_POST);
 
-        $email = $_POST['email'];
-        $nombre = $_POST['nombre'];
+        // 3. Recolectar datos
+        $nombre = $_POST['nombre'] ?? '';
+        // Recolectar la nueva contraseña (puede ser vacía, en cuyo caso es ignorada)
+        $password_new = $_POST['password'] ?? '';
 
+        // 4. Manejo de errores de validación
         if (!empty($errors)) {
             // Fracaso en la validación local
             $_SESSION['update_error'] = implode(' ', $errors); // Une los errores para el mensaje
@@ -149,16 +153,23 @@ class UserController
             exit;
         }
 
-        // 2. Ejecutar la lógica del modelo
-        $result = $this->userModel->update($id, $nombre, $email);
+        // 5. Ejecutar la lógica del modelo
+        // Pasamos 'null' si la contraseña está vacía. El Modelo (User.php) lo manejará.
+        $result = $this->userModel->updateProfile(
+            $id,
+            $nombre,
+            empty($password_new) ? null : $password_new
+        );
 
+        // 6. Manejo de resultados del Modelo
         if ($result === true) {
+            // Éxito: Actualizar el nombre en la sesión y redirigir
             $_SESSION['usuario'] = $nombre;
             header("Location: ../../views/dashboard.php?update=success");
             exit;
         }
 
-        // Fracaso del modelo
+        // 7. Fracaso del modelo (Si devuelve un string con el error de DB)
         $_SESSION['update_error'] = $result;
         header("Location: ../../views/dashboard.php?update=fail");
         exit;
@@ -197,7 +208,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $connection = $db->getConnection(); // Obtiene el objeto mysqli/PDO
 
     // 2. Aplicamos la conexión al modelo
-    $userModel = new User($connection); // <- CAMBIO AQUÍ
+    $userModel = new UserModel($connection); // <- CAMBIO AQUÍ
 
     // 3. Pasamos el modelo al controlador
     $controller = new UserController($userModel);
