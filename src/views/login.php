@@ -1,18 +1,11 @@
 <?php
 session_start();
-// require_once '../php/models/user.php';
+if (isset($_SESSION['user_id'])) {
+    // Si el usuario ya está logueado, redirigir al dashboard o página principal
+    header("Location: dashboard.php");
+    exit;
+}
 
-// if (isset($_SESSION['user_id'])) {
-//   header("Location: dashboard.php");
-//   exit;
-// }
-
-// $error_message = null;
-// if (isset($_SESSION['error_login'])) {
-//   $error_message = $_SESSION['error_login'];
-//   // 2. IMPORTANTE: Eliminar el mensaje de la sesión para que no se muestre de nuevo
-//   unset($_SESSION['error_login']);
-// }
 $message = null;
 
 // 1. Manejar el error de Login (si viene del controlador)
