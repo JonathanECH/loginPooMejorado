@@ -4,6 +4,7 @@ require_once 'DbModel.php';
 
 class User extends DbModel
 {
+    
     public function __construct(mysqli $connection)
     {
         // Esto es correcto y llama al constructor del padre (DbModel)
