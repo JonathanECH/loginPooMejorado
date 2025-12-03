@@ -2,157 +2,18 @@
 // src/php/models/CartModel.php
 
 require_once 'DbModel.php';
-require_once 'ProductModel.php'; // Necesario para gestionar el stock
+require_once 'ProductModel.php';
 
 class CartModel extends DbModel
 {
     public function __construct(mysqli $connection)
     {
-        // Hereda la conexión y los helpers runDml/runSelect
         parent::__construct($connection);
     }
 
     // ----------------------------------------------------
-    // LÓGICA DE LIMPIEZA DE CARROS EXPIRADOS (Stock Release)
+    // 1. MÉTODOS DE LECTURA (Vista)
     // ----------------------------------------------------
-
-    /**
-     * Libera el stock de carritos inactivos que excedieron el tiempo límite (30 minutos).
-     * Nota: ProductModel se instancia internamente para la liberación de stock.
-     * @param int $expirationMinutes Tiempo en minutos antes de expirar.
-     * @return bool True si la limpieza se realizó correctamente.
-     */
-    public function clearExpiredCarts(int $expirationMinutes = 30): bool
-    {
-        // 1. Calcular la marca de tiempo de expiración
-        $expire_time = date('Y-m-d H:i:s', strtotime("-{$expirationMinutes} minutes"));
-
-        // 2. Encontrar carritos expirados (usando fecha_actualizacion)
-        $sql_expired_carts = "SELECT c.id, d.producto_id, d.cantidad 
-                          FROM carritos_activos c
-                          JOIN detalles_carrito d ON c.id = d.carrito_id
-                          WHERE c.fecha_actualizacion < ?";
-
-        $result = $this->runSelectStatement($sql_expired_carts, "s", $expire_time);
-
-        if (is_string($result)) {
-            error_log("Error de DB al buscar carritos expirados: " . $result);
-            return false;
-        }
-
-        if ($result->num_rows > 0) {
-            // Instanciar ProductModel para liberar el stock de forma segura
-            // Nota: Le pasamos $this->conn para que use la misma conexión inyectada.
-            $productModel = new ProductModel($this->conn);
-
-            while ($row = $result->fetch_assoc()) {
-                // 3. Liberar Stock: Usa cantidad negativa para devolver el stock al inventario
-                // El resultado se ignora aquí, ya que el objetivo principal es limpiar el carrito.
-                $productModel->deductStock($row['producto_id'], -$row['cantidad']);
-            }
-
-            // 4. Eliminar los carritos expirados de las tablas activas
-            $sql_delete_carts = "DELETE FROM carritos_activos WHERE fecha_actualizacion < ?";
-            $this->runDmlStatement($sql_delete_carts, "s", $expire_time);
-        }
-
-        return true;
-    }
-
-
-    // ----------------------------------------------------
-    // LÓGICA DE GESTIÓN DEL CARRITO
-    // ----------------------------------------------------
-
-    /**
-     * Obtiene el ID del carrito activo para un usuario, creándolo si no existe.
-     * @return int|string El ID del carrito o un error de DB (string).
-     */
-    public function getOrCreateCartId(int $userId): int|string
-    {
-        // 1. Intentar encontrar un carrito activo
-        $sql_select = "SELECT id FROM carritos_activos WHERE user_id = ?";
-        $result = $this->runSelectStatement($sql_select, "i", $userId);
-
-        if (is_string($result)) {
-            return "Error al buscar carrito: {$result}";
-        }
-
-        if ($result && $result->num_rows > 0) {
-            return (int) $result->fetch_assoc()['id'];
-        }
-
-        // 2. Si no existe, crearlo
-        // NOTA: fecha_actualizacion se llenará automáticamente con CURRENT_TIMESTAMP
-        $sql_insert = "INSERT INTO carritos_activos (user_id) VALUES (?)";
-        $result_insert = $this->runDmlStatement($sql_insert, "i", $userId);
-
-        if (is_string($result_insert)) {
-            return "Error al crear carrito: {$result_insert}";
-        }
-
-        // Recuperar el último ID insertado
-        return (int) $this->conn->insert_id;
-    }
-
-    /**
-     * Añade un producto al carrito del usuario, deduciendo stock inmediatamente.
-     * @return bool|string True si éxito, o mensaje de error (string).
-     */
-    public function addItem(int $userId, int $productId, int $quantity, ProductModel $productModel): bool|string
-    {
-        // Paso 1: Obtener o crear el ID del carrito
-        $cartId = $this->getOrCreateCartId($userId);
-        if (is_string($cartId)) {
-            return $cartId; // Error de DB al obtener/crear carrito
-        }
-
-        // Paso 2: Deducir stock (Lógica crítica)
-        // Esto verifica stock, lo decrementa en productos, o devuelve error.
-        $stock_deduction_result = $productModel->deductStock($productId, $quantity);
-
-        if (is_string($stock_deduction_result)) {
-            return $stock_deduction_result; // Devuelve el mensaje de error de stock o DB.
-        }
-
-        // Paso 3: Añadir/Actualizar el detalle del carrito
-
-        // --- 3a. Intentar actualizar si el ítem ya está en el carrito ---
-        $sql_update_detail = "
-        UPDATE detalles_carrito d
-        JOIN carritos_activos c ON d.carrito_id = c.id
-        SET d.cantidad = d.cantidad + ?
-        WHERE c.user_id = ? AND d.producto_id = ?
-    ";
-        $affected_rows = $this->runDmlStatement($sql_update_detail, "iii", $quantity, $userId, $productId);
-
-        if (is_string($affected_rows)) {
-            // ERROR: Si falla el UPDATE, debemos DEVOLVER EL STOCK DEDUCIDO antes de salir.
-            $productModel->deductStock($productId, -$quantity);
-            return "Error de DB al actualizar carrito: {$affected_rows}";
-        }
-
-        if ($affected_rows === 0) {
-            // --- 3b. Si el UPDATE no afectó filas, hacer INSERT ---
-            $sql_insert_detail = "
-            INSERT INTO detalles_carrito (carrito_id, producto_id, cantidad) 
-            VALUES (?, ?, ?)
-        ";
-            $insert_result = $this->runDmlStatement($sql_insert_detail, "iii", $cartId, $productId, $quantity);
-
-            if (is_string($insert_result)) {
-                // ERROR: Si el INSERT falla, debemos DEVOLVER EL STOCK DEDUCIDO.
-                $productModel->deductStock($productId, -$quantity);
-                return "Error de DB al añadir ítem: {$insert_result}";
-            }
-        }
-
-        // Paso 4: Actualizar la fecha del carrito (para la expiración)
-        $sql_touch = "UPDATE carritos_activos SET fecha_actualizacion = NOW() WHERE id = ?";
-        $this->runDmlStatement($sql_touch, "i", $cartId);
-
-        return true; // Éxito total
-    }
 
     /**
      * Obtiene todos los ítems en el carrito del usuario.
@@ -160,7 +21,6 @@ class CartModel extends DbModel
      */
     public function viewCart(int $userId): array|string
     {
-        // Consulta compleja para unir carrito, detalles y productos
         $sql = "
             SELECT
                 d.producto_id,
@@ -168,7 +28,7 @@ class CartModel extends DbModel
                 p.precio,
                 p.imagen_url,
                 d.cantidad,
-                p.stock_actual AS stock_disponible,
+                (p.stock_actual - p.stock_comprometido) AS stock_disponible,
                 (d.cantidad * p.precio) AS subtotal
             FROM carritos_activos c
             JOIN detalles_carrito d ON c.id = d.carrito_id
@@ -189,5 +49,177 @@ class CartModel extends DbModel
             }
         }
         return $items;
+    }
+
+    // ----------------------------------------------------
+    // 2. MÉTODOS DE GESTIÓN (Añadir, Quitar, Actualizar)
+    // ----------------------------------------------------
+
+    public function getOrCreateCartId(int $userId): int|string
+    {
+        $sql_select = "SELECT id FROM carritos_activos WHERE user_id = ?";
+        $result = $this->runSelectStatement($sql_select, "i", $userId);
+
+        if (is_string($result))
+            return "Error al buscar carrito: {$result}";
+
+        if ($result && $result->num_rows > 0) {
+            return (int) $result->fetch_assoc()['id'];
+        }
+
+        $sql_insert = "INSERT INTO carritos_activos (user_id) VALUES (?)";
+        $result_insert = $this->runDmlStatement($sql_insert, "i", $userId);
+
+        if (is_string($result_insert))
+            return "Error al crear carrito: {$result_insert}";
+
+        return (int) $this->conn->insert_id;
+    }
+
+    public function addItem(int $userId, int $productId, int $quantity, ProductModel $productModel): bool|string
+    {
+        $cartId = $this->getOrCreateCartId($userId);
+        if (is_string($cartId))
+            return $cartId;
+
+        // 1. AUMENTAR STOCK COMPROMETIDO
+        $stock_result = $productModel->manipulateCompromisedStock($productId, $quantity);
+        if (is_string($stock_result))
+            return $stock_result;
+
+        // 2. AÑADIR O ACTUALIZAR DETALLE
+        $sql_update = "
+            UPDATE detalles_carrito d JOIN carritos_activos c ON d.carrito_id = c.id
+            SET d.cantidad = d.cantidad + ?
+            WHERE c.user_id = ? AND d.producto_id = ?
+        ";
+        $affected = $this->runDmlStatement($sql_update, "iii", $quantity, $userId, $productId);
+
+        if (is_string($affected)) {
+            $productModel->manipulateCompromisedStock($productId, -$quantity); // Revertir
+            return "Error al actualizar carrito: {$affected}";
+        }
+
+        if ($affected === 0) {
+            $sql_insert = "INSERT INTO detalles_carrito (carrito_id, producto_id, cantidad) VALUES (?, ?, ?)";
+            $insert_res = $this->runDmlStatement($sql_insert, "iii", $cartId, $productId, $quantity);
+
+            if (is_string($insert_res)) {
+                $productModel->manipulateCompromisedStock($productId, -$quantity); // Revertir
+                return "Error al añadir ítem: {$insert_res}";
+            }
+        }
+
+        // 3. ACTUALIZAR FECHA
+        $this->touchCartDate($cartId);
+        return true;
+    }
+
+    public function removeItem(int $userId, int $productId, ProductModel $productModel): bool|string
+    {
+        // 1. Buscar cantidad actual
+        $sql_find = "SELECT d.cantidad, c.id FROM detalles_carrito d JOIN carritos_activos c ON d.carrito_id = c.id WHERE c.user_id = ? AND d.producto_id = ?";
+        $result = $this->runSelectStatement($sql_find, "ii", $userId, $productId);
+
+        if (is_string($result))
+            return "Error de DB al buscar ítem.";
+        if ($result->num_rows === 0)
+            return true; // Ya no existe
+
+        $row = $result->fetch_assoc();
+        $quantity = (int) $row['cantidad'];
+        $cartId = (int) $row['id'];
+
+        // 2. Liberar stock comprometido
+        $stock_res = $productModel->manipulateCompromisedStock($productId, -$quantity);
+        if (is_string($stock_res))
+            return "Error al devolver stock: {$stock_res}";
+
+        // 3. Eliminar ítem
+        $sql_del = "DELETE FROM detalles_carrito WHERE carrito_id = ? AND producto_id = ?";
+        $del_res = $this->runDmlStatement($sql_del, "ii", $cartId, $productId);
+
+        if (is_string($del_res))
+            return "Error al eliminar ítem.";
+
+        $this->touchCartDate($cartId);
+        return true;
+    }
+
+    public function updateQuantity(int $userId, int $productId, int $newQuantity, ProductModel $productModel): bool|string
+    {
+        $sql_find = "SELECT d.cantidad, c.id FROM detalles_carrito d JOIN carritos_activos c ON d.carrito_id = c.id WHERE c.user_id = ? AND d.producto_id = ?";
+        $result = $this->runSelectStatement($sql_find, "ii", $userId, $productId);
+
+        if (is_string($result) || $result->num_rows === 0)
+            return "Error: Ítem no encontrado.";
+
+        $row = $result->fetch_assoc();
+        $oldQuantity = (int) $row['cantidad'];
+        $cartId = (int) $row['id'];
+        $difference = $newQuantity - $oldQuantity;
+
+        // Ajustar stock comprometido
+        $stock_res = $productModel->manipulateCompromisedStock($productId, $difference);
+        if (is_string($stock_res))
+            return $stock_res;
+
+        // Actualizar cantidad
+        $sql_upd = "UPDATE detalles_carrito SET cantidad = ? WHERE carrito_id = ? AND producto_id = ?";
+        $upd_res = $this->runDmlStatement($sql_upd, "iii", $newQuantity, $cartId, $productId);
+
+        if (is_string($upd_res)) {
+            $productModel->manipulateCompromisedStock($productId, -$difference); // Revertir
+            return "Error al actualizar cantidad.";
+        }
+
+        $this->touchCartDate($cartId);
+        return true;
+    }
+
+    // ----------------------------------------------------
+    // 3. MÉTODOS DE LIMPIEZA Y UTILIDAD
+    // ----------------------------------------------------
+
+    private function touchCartDate(int $cartId)
+    {
+        $sql = "UPDATE carritos_activos SET fecha_actualizacion = NOW() WHERE id = ?";
+        $this->runDmlStatement($sql, "i", $cartId);
+    }
+
+    // En src/php/models/CartModel.php
+
+    public function clearExpiredCarts(int $expirationMinutes = 30): bool
+    {
+        // CAMBIO IMPORTANTE: Usamos DATE_SUB(NOW()...) de MySQL en lugar de calcularlo en PHP.
+        // Esto evita problemas si la hora de PHP y MySQL no están sincronizadas.
+
+        // 1. Encontrar carritos expirados
+        $sql_expired_carts = "SELECT c.id, d.producto_id, d.cantidad 
+                              FROM carritos_activos c
+                              JOIN detalles_carrito d ON c.id = d.carrito_id
+                              WHERE c.fecha_actualizacion < DATE_SUB(NOW(), INTERVAL ? MINUTE)";
+
+        $result = $this->runSelectStatement($sql_expired_carts, "i", $expirationMinutes);
+
+        if (is_string($result)) {
+            error_log("Error de DB al buscar carritos expirados: " . $result);
+            return false;
+        }
+
+        if ($result->num_rows > 0) {
+            $productModel = new ProductModel($this->conn);
+
+            while ($row = $result->fetch_assoc()) {
+                // Liberar Stock
+                $productModel->manipulateCompromisedStock($row['producto_id'], -$row['cantidad']);
+            }
+
+            // 2. Eliminar los carritos expirados
+            $sql_delete_carts = "DELETE FROM carritos_activos WHERE fecha_actualizacion < DATE_SUB(NOW(), INTERVAL ? MINUTE)";
+            $this->runDmlStatement($sql_delete_carts, "i", $expirationMinutes);
+        }
+
+        return true;
     }
 }

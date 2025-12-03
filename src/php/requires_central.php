@@ -10,3 +10,4 @@ require_once __DIR__ . '/models/CartModel.php';
 
 // 4. SERVICIOS
 require_once __DIR__ . '/services/UserValidator.php'; 
+require_once __DIR__ . '/services/SecurityHelper.php';
