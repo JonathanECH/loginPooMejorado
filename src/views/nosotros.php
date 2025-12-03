@@ -1,25 +1,49 @@
 <?php
-// src/php/dashboard.php (Refactorizado para usar User::getUserDataById)
+// src/views/dashboard.php 
 session_start();
-require_once '../php/requires_central.php';
-require_once '../php/models/ProductModel.php';
 
+// 1. INCLUSIÓN DE DEPENDENCIAS
+// Asegúrate de que requires_central.php cargue: Database, DbModel, User, Product, Cart y SecurityHelper
+require_once '../php/requires_central.php';
+
+// 2. SETUP DE CONEXIÓN E INYECCIÓN
 $db = new Database();
 $connection = $db->getConnection();
+
 $productModel = new ProductModel($connection);
+$cartModel = new CartModel($connection);
+
+// 3. OBTENER PRODUCTOS DEL CATÁLOGO
 $products = $productModel->getAllProducts();
 $product_error_message = is_string($products) ? $products : null;
-if (is_string($products))
-    $products = [];
+if (is_string($products)) $products = [];
 
-// --- VARIABLES DE SESIÓN ---
-$nombre_usuario = $_SESSION['usuario'] ?? 'Invitado'; // Valor predeterminado
-$user_logged_in = isset($_SESSION['user_id']); // Simple flag
-$user_rol = $_SESSION['user_rol'] ?? 'cliente'; // Asume 'cliente' si no está logueado
+// 4. VARIABLES DE SESIÓN Y ROL
+$nombre_usuario = $_SESSION['usuario'] ?? 'Invitado';
+$user_logged_in = isset($_SESSION['user_id']);
+$id_usuario = $_SESSION['user_id'] ?? null;
+$user_rol = $_SESSION['user_rol'] ?? 'cliente';
 
-// Manejo de errores de actualización...
+// 5. MANEJO DE MENSAJES DE SESIÓN (Errores/Éxitos)
 $update_error_message = $_SESSION['update_error'] ?? null;
-unset($_SESSION['update_error']);
+$cart_success_message = $_SESSION['cart_success'] ?? null;
+$cart_error_message = $_SESSION['cart_error'] ?? null;
+
+// Limpiar mensajes después de leerlos
+unset($_SESSION['update_error'], $_SESSION['cart_success'], $_SESSION['cart_error']);
+
+// 6. LÓGICA DE CARRITO (Visualización en el Header)
+$total_items_in_cart = 0;
+
+if ($user_logged_in && $user_rol !== 'administrador') {
+    $cart_result = $cartModel->viewCart($id_usuario);
+    if (is_array($cart_result)) {
+        $total_items_in_cart = array_sum(array_column($cart_result, 'cantidad'));
+    }
+}
+
+// 7. OBTENER TOKEN CSRF (Para usar en los formularios HTML)
+$csrf_token = SecurityHelper::getCsrfToken();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,6 +74,20 @@ unset($_SESSION['update_error']);
                     <li>
                         <button id="theme-toggle-desktop" class="theme-btn" title="Cambiar tema">🌙</button>
                     </li>
+
+                    <?php if ($user_logged_in && $user_rol !== 'administrador'): ?>
+                        <li class="cart-icon-container">
+                            <a href="carrito.php" id="cart-link" style="text-decoration: none; font-weight: bold;">
+                                🛒 Carrito
+                                <?php if ($total_items_in_cart > 0): ?>
+                                    <span class="cart-count" style="background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.8em;">
+                                        <?php echo $total_items_in_cart; ?>
+                                    </span>
+                                <?php endif; ?>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
                     <?php if (isset($_SESSION['usuario'])): ?>
                         <li class="user-menu-item">
                             <a href="#perfil" id="user-name-link"><?php echo $nombre_usuario; ?></a>

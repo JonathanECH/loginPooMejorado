@@ -49,6 +49,7 @@ header .desktop-menu ul li:hover {
   background-color: var(--secondary-color);
 }
 
+
 @media (width < 680px) {
   header {
     position: fixed;
