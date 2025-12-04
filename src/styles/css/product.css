@@ -9,12 +9,12 @@
     grid-template-columns: repeat(3, 1fr);
     
     /* Espaciado: 30px vertical, 20px horizontal */
-    gap: 30px 20px; 
+    gap: 10px 5px; 
     
     justify-items: center; 
     justify-content: center;
     align-items: start;
-    padding: 40px 20px;
+    padding: 0;
     
     /* Fondo limpio (se adapta si hay modo oscuro por las variables globales) */
     background-color: transparent; 
