@@ -73,20 +73,48 @@ $csrf_token = SecurityHelper::getCsrfToken();
           <li><a href="#productos">Nuestros Productos</a></li>
           <li><a href="#testimonios">Testimonios</a></li>
           <li><a href="#formulario-contacto">Contacto</a></li>
-          <li>
-            <button id="theme-toggle-desktop" class="theme-btn" title="Cambiar tema">🌙</button>
-          </li>
 
           <?php if ($user_logged_in && $user_rol !== 'administrador'): ?>
             <li class="cart-icon-container">
-              <a href="carrito.php" id="cart-link" style="text-decoration: none; font-weight: bold;">
-                🛒 Carrito
+              <a href="carrito.php" class="cart-link-main">
+                <span>🛒 Carrito</span>
                 <?php if ($total_items_in_cart > 0): ?>
-                  <span class="cart-count" style="background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.8em;">
-                    <?php echo $total_items_in_cart; ?>
-                  </span>
+                  <span class="cart-badge"><?php echo $total_items_in_cart; ?></span>
                 <?php endif; ?>
               </a>
+
+              <?php if (isset($cart_result) && is_array($cart_result) && count($cart_result) > 0): ?>
+                <div class="shein-dropdown">
+                  <ul class="shein-list">
+                    <?php foreach ($cart_result as $item): ?>
+                      <li class="shein-item">
+                        <div class="shein-img-wrapper">
+                          <img
+                            src="<?php echo htmlspecialchars($item['imagen_url']); ?>"
+                            alt="Producto"
+                            style="width: 70px; height: 90px; object-fit: cover; border-radius: 4px; display: block;">
+                        </div>
+
+                        <div class="shein-info">
+                          <span class="shein-name"><?php echo htmlspecialchars($item['nombre']); ?></span>
+                          <span style="font-size: 0.8rem; color: #888;">Cant: <?php echo $item['cantidad']; ?></span>
+                          <span class="shein-price">$<?php echo number_format($item['precio'], 2); ?></span>
+                        </div>
+                      </li>
+                    <?php endforeach; ?>
+                  </ul>
+
+                  <div class="shein-footer">
+                    <div class="shein-total-row">
+                      <span>Total:</span>
+                      <span style="color: #fa6338;">
+                        $<?php echo number_format(array_sum(array_map(fn($i) => $i['cantidad'] * $i['precio'], $cart_result)), 2); ?>
+                      </span>
+                    </div>
+                    <a href="carrito.php" class="shein-btn-checkout">VER BOLSA</a>
+                  </div>
+                </div>
+              <?php endif; ?>
             </li>
           <?php endif; ?>
 
@@ -97,6 +125,9 @@ $csrf_token = SecurityHelper::getCsrfToken();
           <?php else: ?>
             <li><a href="./login.php">Iniciar Sesión</a></li>
           <?php endif; ?>
+          <li>
+            <button id="theme-toggle-desktop" class="theme-btn" title="Cambiar tema">🌙</button>
+          </li>
         </ul>
       </nav>
     </section>
@@ -109,21 +140,44 @@ $csrf_token = SecurityHelper::getCsrfToken();
         <li><a href="#testimonios">Testimonios</a></li>
         <li><a href="#preguntas">FAQs</a></li>
         <li><a href="#formulario-contacto">Contacto</a></li>
-        <li>
-          <button id="theme-toggle-mobile" class="theme-btn" title="Cambiar tema">🌙</button>
-        </li>
+
         <?php if ($user_logged_in && $user_rol !== 'administrador'): ?>
-          <li class="cart-icon-container">
-            <a href="carrito.php" id="cart-link" style="text-decoration: none; font-weight: bold;">
-              🛒 Carrito
+          <li class="cart-icon-container mobile-cart-trigger"> <a href="carrito.php" class="cart-link-main" onclick="toggleMobileCart(event)"> <span>🛒 Carrito</span>
               <?php if ($total_items_in_cart > 0): ?>
-                <span class="cart-count" style="background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.8em;">
-                  <?php echo $total_items_in_cart; ?>
-                </span>
+                <span class="cart-badge"><?php echo $total_items_in_cart; ?></span>
               <?php endif; ?>
             </a>
+
+            <?php if (isset($cart_result) && is_array($cart_result) && count($cart_result) > 0): ?>
+              <div class="shein-dropdown mobile-dropdown-content">
+                <ul class="shein-list">
+                  <?php foreach ($cart_result as $item): ?>
+                    <li class="shein-item">
+                      <div class="shein-img-wrapper">
+                        <img src="<?php echo htmlspecialchars($item['imagen_url']); ?>" alt="Producto" style="width: 70px; height: 90px; object-fit: cover; border-radius: 4px; display: block;">
+                      </div>
+                      <div class="shein-info">
+                        <span class="shein-name"><?php echo htmlspecialchars($item['nombre']); ?></span>
+                        <span style="font-size: 0.8rem; color: #888;">Cant: <?php echo $item['cantidad']; ?></span>
+                        <span class="shein-price">$<?php echo number_format($item['precio'], 2); ?></span>
+                      </div>
+                    </li>
+                  <?php endforeach; ?>
+                </ul>
+                <div class="shein-footer">
+                  <div class="shein-total-row">
+                    <span>Total:</span>
+                    <span style="color: #fa6338;">
+                      $<?php echo number_format(array_sum(array_map(fn($i) => $i['cantidad'] * $i['precio'], $cart_result)), 2); ?>
+                    </span>
+                  </div>
+                  <a href="carrito.php" class="shein-btn-checkout">VER BOLSA</a>
+                </div>
+              </div>
+            <?php endif; ?>
           </li>
         <?php endif; ?>
+
         <?php if (isset($_SESSION['usuario'])): ?>
           <li class="user-menu-item">
             <a href="userdata.php" id="user-name-link"><?php echo $nombre_usuario; ?></a>
@@ -131,6 +185,9 @@ $csrf_token = SecurityHelper::getCsrfToken();
         <?php else: ?>
           <li><a href="./login.php">Iniciar Sesión</a></li>
         <?php endif; ?>
+        <li>
+          <button id="theme-toggle-mobile" class="theme-btn" title="Cambiar tema">🌙</button>
+        </li>
       </ul>
     </nav>
     </section>
@@ -222,7 +279,7 @@ $csrf_token = SecurityHelper::getCsrfToken();
                   Reservar
                 </button>
               <?php else: ?>
-                <a href="./login.php" class="btn">Iniciar Sesión para Reservar</a>
+                <a href="./login.php" class="btn">Reservar</a>
               <?php endif; ?>
             </form>
 
@@ -360,6 +417,18 @@ $csrf_token = SecurityHelper::getCsrfToken();
   </footer>
   <script src="../js/header-component.js"></script>
   <script src="../js/theme.js"></script>
+  <script>
+    function toggleMobileCart(e) {
+      // Solo aplica si estamos en vista móvil (menor a 768px)
+      if (window.innerWidth <= 768) {
+        e.preventDefault(); // Evita ir a carrito.php
+
+        // Busca el contenedor padre y le pone la clase 'active-cart'
+        const container = e.currentTarget.closest('.cart-icon-container');
+        container.classList.toggle('active-cart');
+      }
+    }
+  </script>
 </body>
 
 </html>

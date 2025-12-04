@@ -71,9 +71,6 @@ $csrf_token = SecurityHelper::getCsrfToken();
                     <li><a href="dashboard.php#testimonios">testimonial de pasantias</a></li>
                     <li><a href="dashboard.php#preguntas">FAQs</a></li>
                     <li><a href="dashboard.php#formulario-contacto">Contacto</a></li>
-                    <li>
-                        <button id="theme-toggle-desktop" class="theme-btn" title="Cambiar tema">🌙</button>
-                    </li>
 
                     <?php if ($user_logged_in && $user_rol !== 'administrador'): ?>
                         <li class="cart-icon-container">
@@ -96,7 +93,9 @@ $csrf_token = SecurityHelper::getCsrfToken();
                     <?php else: ?>
                         <li><a href="./login.php">Iniciar Sesión</a></li>
                     <?php endif; ?>
-                </ul>
+                    <li>
+                        <button id="theme-toggle-desktop" class="theme-btn" title="Cambiar tema">🌙</button>
+                    </li>
                 </ul>
             </nav>
             <nav id="mobile-menu">
