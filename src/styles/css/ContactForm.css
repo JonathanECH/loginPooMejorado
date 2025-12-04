@@ -63,23 +63,30 @@
 }
 
 .container-form__submit button {
-    font-size: 1.2rem;
-    padding: 0 1.5rem;
-    margin-right: 0;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    background-color: #007bff;
-    border: none;
+    font-size: 1rem;
+    padding: 12px 30px;
+    
+    /* Usamos tus variables de color */
+    background-color: var(--secondary-color, #3d4295);
     color: #fff;
-    border-radius: .2rem;
+    
+    border: none;
+    border-radius: 0.5rem;
     cursor: pointer;
-    width: auto;
+    font-weight: 700;
+    letter-spacing: 0.5px; /* Un poco de espacio entre letras queda elegante */
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(61, 66, 149, 0.2);
 }
 
-
+/* Hover del botón */
 .container-form__submit button:hover {
-    background-color: #0056b3;
+    /* Cambia al color primario (naranja) o aclara el secundario */
+    background-color: var(--primary-color, orange); 
+    color: #fff; /* O negro si el naranja es muy claro */
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* --------------------Media Query-------------------- */
