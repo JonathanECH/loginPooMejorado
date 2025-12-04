@@ -1,0 +1,153 @@
+/* Estilos Base (Escritorio) */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  background-color: #2c3e50; /* Color oscuro profesional */
+  color: #ecf0f1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  flex-shrink: 0; /* Evita que se encoja */
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sidebar h3 {
+  margin: 0;
+  color: #f39c12; /* Naranja acento */
+  font-size: 1.2rem;
+}
+
+/* Botón hamburguesa (Oculto en PC) */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar nav ul li {
+  margin-bottom: 10px;
+}
+
+.sidebar nav ul li a {
+  color: #bdc3c7;
+  text-decoration: none;
+  font-size: 1rem;
+  display: block;
+  padding: 12px 15px;
+  border-radius: 6px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.sidebar nav ul li a:hover,
+.sidebar nav ul li a.active {
+  background-color: #34495e;
+  color: white;
+  font-weight: bold;
+}
+
+.sidebar .logout-form {
+  margin-top: auto; /* Empuja al fondo en PC */
+  padding-top: 20px;
+  border-top: 1px solid #34495e;
+}
+
+.logout-btn {
+  width: 100%;
+  background: #e74c3c;
+  border: none;
+  padding: 12px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s;
+}
+
+.logout-btn:hover {
+  background: #c0392b;
+}
+
+.main-content {
+  flex: 1;
+  padding: 40px;
+  background-color: #ecf0f1;
+  overflow-y: auto; /* Permite scroll si el contenido es largo */
+}
+
+/* ---------------------------------------------------- */
+/* MEDIA QUERIES (TABLET Y MÓVIL)                       */
+/* ---------------------------------------------------- */
+@media (max-width: 900px) {
+  .dashboard-container {
+    flex-direction: column; /* Cambia a columna (uno arriba del otro) */
+  }
+
+  .sidebar {
+    width: 100%; /* Ocupa todo el ancho */
+    height: auto;
+    min-height: auto;
+    padding: 15px;
+  }
+
+  .sidebar h3 {
+    font-size: 1.1rem;
+  }
+
+  /* Mostrar el botón hamburguesa */
+  .menu-toggle {
+    display: block;
+  }
+
+  /* Ocultar el menú y el logout por defecto en móvil */
+  .sidebar nav,
+  .sidebar .logout-form {
+    display: none;
+    margin-top: 15px;
+  }
+
+  /* Clase para mostrar el menú cuando se hace click */
+  .sidebar.active nav,
+  .sidebar.active .logout-form {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .sidebar .logout-form {
+    margin-top: 15px; /* Ya no usa auto margin */
+  }
+
+  .main-content {
+    padding: 20px; /* Menos padding en móvil */
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
