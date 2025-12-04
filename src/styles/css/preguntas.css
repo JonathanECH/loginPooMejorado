@@ -42,7 +42,9 @@
 
 @media (max-width: 900px) {
 	.preguntas {
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: repeat(2, .5fr);
+		padding:5px 5px;
+		gap: 10px 3px;
 	}
 	.pregunta-card { width: 300px; }
 }
@@ -79,7 +81,6 @@
 @media (max-width: 600px) {
 	.preguntas .pregunta-card:last-child {
 		grid-column: auto;
-		max-width: 100%;
 	}
 }
 
