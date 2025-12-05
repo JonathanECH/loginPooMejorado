@@ -2,10 +2,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const nav = document.getElementById("navigation-bar");
   const mobileMenuBtn = document.getElementById("mobile-menu-btn");
   const mobileMenu = document.getElementById("mobile-menu");
-  const menuMobileLists = mobileMenu.getElementsByTagName("li");
+  
+  // CAMBIO CLAVE: Usamos '>' para seleccionar solo los hijos directos del menú
+  // Así evitamos seleccionar los 'li' de los productos dentro del carrito por accidente.
+  const menuMobileLists = document.querySelectorAll("#mobile-menu > ul > li");
+  
   let isActive = false;
 
-  // Agrega el evento de scroll
+  // Eventos de Scroll
   window.addEventListener("scroll", () => (mobileMenuBtn.style.opacity = ".5"));
   window.addEventListener("scrollend", () => {
     const currentScroll = window.scrollY || document.documentElement.scrollTop;
@@ -14,16 +18,21 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // CLICK DE LOS ÍTEMS DEL MENÚ MÓVIL
-  for (let i = 0; i < menuMobileLists.length; i++) {
-    menuMobileLists[i].addEventListener("click", function () {
+  menuMobileLists.forEach(item => {
+    
+    // Si es el botón del carrito, NO le agregamos el evento de cerrar.
+    if (item.classList.contains("mobile-cart-trigger")) {
+        return; // Saltamos este elemento
+    }
+
+    item.addEventListener("click", function () {
       cerrarMenuConAnimacion();
       isActive = false;
     });
-  }
+  });
 
-  // CLICK DEL BOTÓN DEL MENÚ MÓVIL
+  // CLICK DEL BOTÓN HAMBURGUESA
   mobileMenuBtn.addEventListener("click", function () {
-    console.log("click");
     if (!isActive) {
       configurarMenu("✖", "flex", "0");
       isActive = true;
@@ -33,16 +42,15 @@ document.addEventListener("DOMContentLoaded", function () {
     isActive = false;
   });
 
-  //EVENTO  DE CAMBIO DE TAMAÑO DE VENTANA
+  // REDIMENSIONAR PANTALLA
   window.addEventListener("resize", function () {
-    console.log("resize");
     if (isActive) {
       cerrarMenuConAnimacion();
       isActive = false;
     }
   });
 
-  //FUNCIONES DE CONFIGURACIÓN Y CIERRE DEL MENÚ
+  // FUNCIONES AUXILIARES
   function configurarMenu(btnText, menuDisplay, menuRight) {
     mobileMenuBtn.innerHTML = btnText;
     mobileMenu.style.display = menuDisplay;
@@ -50,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
       mobileMenu.style.right = menuRight;
     });
   }
+  
   function cerrarMenuConAnimacion() {
     mobileMenuBtn.innerHTML = "☰";
     mobileMenu.style.right = "100%";
