@@ -63,26 +63,32 @@ class UserValidator
     {
         $errors = [];
 
-        // 1. Recolección de datos
         $nombre = $data['nombre'] ?? '';
+        $currentPassword = $data['currentPassword'] ?? '';
         $password_original = $data['password'] ?? '';
         $password_confirm = $data['confirmPassword'] ?? '';
 
-        // VALIDACIÓN DE NOMBRE (Obligatoria)
+        // 1. Validar que se envió la contraseña actual
+        if (empty($currentPassword)) {
+            $errors[] = "Error: Debes ingresar tu contraseña actual para guardar cambios.";
+        }
+
+        // 2. Validación de nombre
+        if (empty($nombre)) {
+            $errors[] = "Error: El nombre no puede estar vacío.";
+        }
         if (strlen($nombre) < 3 || strlen($nombre) > 64)
             $errors[] = "Error: El nombre debe tener entre 3 y 64 caracteres.";
 
-        // VALIDACIÓN DE CONTRASEÑA (Opcional, solo si se proporciona)
-        // Asumimos que el campo de contraseña en el formulario puede estar vacío.
+        // 3. Validación de nueva contraseña (Opcional)
         if (!empty($password_original)) {
             if (strlen($password_original) < 6)
                 $errors[] = "Error: La nueva contraseña debe tener al menos 6 caracteres.";
 
             if ($password_original !== $password_confirm)
-                $errors[] = "Error: Las contraseñas no coinciden.";
+                $errors[] = "Error: Las contraseñas nuevas no coinciden.";
         }
 
-        // El email y el ID se eliminan completamente de la validación.
         return $errors;
     }
 }

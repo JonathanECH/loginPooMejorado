@@ -3,7 +3,6 @@
 session_start();
 
 // 1. INCLUSIÓN DE DEPENDENCIAS
-// Asegúrate de que requires_central.php cargue: Database, DbModel, User, Product, Cart y SecurityHelper
 require_once '../php/requires_central.php';
 
 // 2. SETUP DE CONEXIÓN E INYECCIÓN
@@ -16,7 +15,8 @@ $cartModel = new CartModel($connection);
 // 3. OBTENER PRODUCTOS DEL CATÁLOGO
 $products = $productModel->getAllProducts();
 $product_error_message = is_string($products) ? $products : null;
-if (is_string($products)) $products = [];
+if (is_string($products))
+  $products = [];
 
 // 4. VARIABLES DE SESIÓN Y ROL
 $nombre_usuario = $_SESSION['usuario'] ?? 'Invitado';
@@ -34,15 +34,17 @@ unset($_SESSION['update_error'], $_SESSION['cart_success'], $_SESSION['cart_erro
 
 // 6. LÓGICA DE CARRITO (Visualización en el Header)
 $total_items_in_cart = 0;
+$cart_items = []; // Inicializar array para el dropdown
 
 if ($user_logged_in && $user_rol !== 'administrador') {
   $cart_result = $cartModel->viewCart($id_usuario);
   if (is_array($cart_result)) {
+    $cart_items = $cart_result; // Guardamos los ítems para el dropdown
     $total_items_in_cart = array_sum(array_column($cart_result, 'cantidad'));
   }
 }
 
-// 7. OBTENER TOKEN CSRF (Para usar en los formularios HTML)
+// 7. OBTENER TOKEN CSRF
 $csrf_token = SecurityHelper::getCsrfToken();
 ?>
 <!DOCTYPE html>
@@ -69,32 +71,32 @@ $csrf_token = SecurityHelper::getCsrfToken();
       <nav class="desktop-menu">
         <ul>
           <li><a href="#">Inicio</a></li>
-          <li><a href="nosotros.php">Sobre nosotros</a></li>
+          <li><a href="#sobrenosotros-view">Sobre Nosotros</a></li>
           <li><a href="#productos">Nuestros Productos</a></li>
           <li><a href="#testimonios">Testimonios</a></li>
           <li><a href="#formulario-contacto">Contacto</a></li>
+          <li>
+            <button id="theme-toggle-desktop" class="theme-btn" title="Cambiar tema">🌙</button>
+          </li>
 
           <?php if ($user_logged_in && $user_rol !== 'administrador'): ?>
             <li class="cart-icon-container">
-              <a href="carrito.php" class="cart-link-main">
+              <a href="userdata.php?tab=cart" class="cart-link-main">
                 <span>🛒 Carrito</span>
                 <?php if ($total_items_in_cart > 0): ?>
                   <span class="cart-badge"><?php echo $total_items_in_cart; ?></span>
                 <?php endif; ?>
               </a>
 
-              <?php if (isset($cart_result) && is_array($cart_result) && count($cart_result) > 0): ?>
+              <?php if (!empty($cart_items)): ?>
                 <div class="shein-dropdown">
                   <ul class="shein-list">
-                    <?php foreach ($cart_result as $item): ?>
+                    <?php foreach ($cart_items as $item): ?>
                       <li class="shein-item">
                         <div class="shein-img-wrapper">
-                          <img
-                            src="<?php echo htmlspecialchars($item['imagen_url']); ?>"
-                            alt="Producto"
+                          <img src="<?php echo htmlspecialchars($item['imagen_url']); ?>" alt="Producto"
                             style="width: 70px; height: 90px; object-fit: cover; border-radius: 4px; display: block;">
                         </div>
-
                         <div class="shein-info">
                           <span class="shein-name"><?php echo htmlspecialchars($item['nombre']); ?></span>
                           <span style="font-size: 0.8rem; color: #888;">Cant: <?php echo $item['cantidad']; ?></span>
@@ -103,15 +105,14 @@ $csrf_token = SecurityHelper::getCsrfToken();
                       </li>
                     <?php endforeach; ?>
                   </ul>
-
                   <div class="shein-footer">
                     <div class="shein-total-row">
                       <span>Total:</span>
                       <span style="color: #fa6338;">
-                        $<?php echo number_format(array_sum(array_map(fn($i) => $i['cantidad'] * $i['precio'], $cart_result)), 2); ?>
+                        $<?php echo number_format(array_sum(array_column($cart_items, 'subtotal')), 2); ?>
                       </span>
                     </div>
-                    <a href="carrito.php" class="shein-btn-checkout">VER BOLSA</a>
+                    <a href="userdata.php?tab=cart" class="shein-btn-checkout">VER BOLSA</a>
                   </div>
                 </div>
               <?php endif; ?>
@@ -120,14 +121,12 @@ $csrf_token = SecurityHelper::getCsrfToken();
 
           <?php if ($user_logged_in): ?>
             <li class="user-menu-item">
-              <a href="userdata.php" id="user-name-link"><?php echo $nombre_usuario; ?></a>
+              <a href="userdata.php?tab=profile" id="user-name-link"><?php echo $nombre_usuario; ?>
+                (<?php echo ucfirst($user_rol); ?>)</a>
             </li>
           <?php else: ?>
             <li><a href="./login.php">Iniciar Sesión</a></li>
           <?php endif; ?>
-          <li>
-            <button id="theme-toggle-desktop" class="theme-btn" title="Cambiar tema">🌙</button>
-          </li>
         </ul>
       </nav>
     </section>
@@ -135,26 +134,29 @@ $csrf_token = SecurityHelper::getCsrfToken();
     <nav id="mobile-menu">
       <ul>
         <li><a href="#">Inicio</a></li>
-        <li><a href="nosotros.php">Sobre nosotros</a></li>
+        <li><a href="#sobrenosotros-view">Sobre Nosotros</a></li>
         <li><a href="#productos">Nuestros Productos</a></li>
         <li><a href="#testimonios">Testimonios</a></li>
         <li><a href="#preguntas">FAQs</a></li>
         <li><a href="#formulario-contacto">Contacto</a></li>
 
         <?php if ($user_logged_in && $user_rol !== 'administrador'): ?>
-          <li class="cart-icon-container mobile-cart-trigger"> <a href="carrito.php" class="cart-link-main" onclick="toggleMobileCart(event)"> <span>🛒 Carrito</span>
+          <li class="cart-icon-container mobile-cart-trigger">
+            <a href="userdata.php?tab=cart" class="cart-link-main">
+              <span>🛒 Carrito</span>
               <?php if ($total_items_in_cart > 0): ?>
                 <span class="cart-badge"><?php echo $total_items_in_cart; ?></span>
               <?php endif; ?>
             </a>
 
-            <?php if (isset($cart_result) && is_array($cart_result) && count($cart_result) > 0): ?>
+            <?php if (!empty($cart_items)): ?>
               <div class="shein-dropdown mobile-dropdown-content">
                 <ul class="shein-list">
-                  <?php foreach ($cart_result as $item): ?>
+                  <?php foreach ($cart_items as $item): ?>
                     <li class="shein-item">
                       <div class="shein-img-wrapper">
-                        <img src="<?php echo htmlspecialchars($item['imagen_url']); ?>" alt="Producto" style="width: 70px; height: 90px; object-fit: cover; border-radius: 4px; display: block;">
+                        <img src="<?php echo htmlspecialchars($item['imagen_url']); ?>" alt="Producto"
+                          style="width: 70px; height: 90px; object-fit: cover; border-radius: 4px; display: block;">
                       </div>
                       <div class="shein-info">
                         <span class="shein-name"><?php echo htmlspecialchars($item['nombre']); ?></span>
@@ -168,10 +170,10 @@ $csrf_token = SecurityHelper::getCsrfToken();
                   <div class="shein-total-row">
                     <span>Total:</span>
                     <span style="color: #fa6338;">
-                      $<?php echo number_format(array_sum(array_map(fn($i) => $i['cantidad'] * $i['precio'], $cart_result)), 2); ?>
+                      $<?php echo number_format(array_sum(array_column($cart_items, 'subtotal')), 2); ?>
                     </span>
                   </div>
-                  <a href="carrito.php" class="shein-btn-checkout">VER BOLSA</a>
+                  <a href="userdata.php?tab=cart" class="shein-btn-checkout">VER BOLSA</a>
                 </div>
               </div>
             <?php endif; ?>
@@ -180,7 +182,7 @@ $csrf_token = SecurityHelper::getCsrfToken();
 
         <?php if (isset($_SESSION['usuario'])): ?>
           <li class="user-menu-item">
-            <a href="userdata.php" id="user-name-link"><?php echo $nombre_usuario; ?></a>
+            <a href="userdata.php?tab=profile" id="user-name-link"><?php echo $nombre_usuario; ?></a>
           </li>
         <?php else: ?>
           <li><a href="./login.php">Iniciar Sesión</a></li>
@@ -190,19 +192,11 @@ $csrf_token = SecurityHelper::getCsrfToken();
         </li>
       </ul>
     </nav>
-    </section>
+
     <button id="mobile-menu-btn">☰</button>
   </header>
 
   <main>
-    <?php if ($user_logged_in): ?>
-      <form action="../php/controllers/UserController.php" method="POST" style="text-align: right; padding: 10px;">
-        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-        <input type="hidden" name="action" value="logout">
-        <button type="submit" class="logout-btn">Cerrar Sesión</button>
-      </form>
-    <?php endif; ?>
-
     <?php if ($update_error_message): ?>
       <div class="errorMsg" style="color: red; padding: 10px; text-align:center; border: 1px solid red; margin: 10px;">
         <?php echo htmlspecialchars($update_error_message); ?>
@@ -210,7 +204,8 @@ $csrf_token = SecurityHelper::getCsrfToken();
     <?php endif; ?>
 
     <?php if ($cart_success_message): ?>
-      <div class="successMsg" style="color: green; padding: 10px; text-align:center; border: 1px solid green; margin: 10px;">
+      <div class="successMsg"
+        style="color: green; padding: 10px; text-align:center; border: 1px solid green; margin: 10px;">
         <?php echo htmlspecialchars($cart_success_message); ?>
       </div>
     <?php endif; ?>
@@ -221,6 +216,28 @@ $csrf_token = SecurityHelper::getCsrfToken();
       </div>
     <?php endif; ?>
 
+    <section id="sobrenosotros-view" class="content-view content-container sobrenosotros" style="display:none;">
+      <h1 class="page-title">Conoce a Lubriken</h1>
+      <hr>
+      <section class="mission">
+        <h2>Nuestra Misión</h2>
+        <p>En Lubriken, nuestra misión es simplificar el mantenimiento y la protección de tus activos, ofreciendo
+          lubricantes y productos químicos de la más alta calidad.</p>
+      </section>
+      <section class="history">
+        <h2>Nuestra Historia</h2>
+        <p>Fundada en 2020, Lubriken nació de la necesidad de un servicio especializado y una entrega eficiente en el
+          sector industrial.</p>
+      </section>
+      <section class="values">
+        <h2>Nuestros Valores</h2>
+        <ul>
+          <li><strong>Calidad:</strong> Productos certificados y probados.</li>
+          <li><strong>Compromiso:</strong> Entrega rápida y atención al cliente.</li>
+          <li><strong>Innovación:</strong> Soluciones constantes.</li>
+        </ul>
+      </section>
+    </section>
 
     <section id="productos" class="productos">
       <h2 class="productos-title">Nuestros Productos</h2>
@@ -234,178 +251,107 @@ $csrf_token = SecurityHelper::getCsrfToken();
       <?php endif; ?>
 
       <?php foreach ($products as $product):
-        // Usamos stock_disponible calculado en SQL (stock_actual - stock_comprometido)
         $stock = $product['stock_disponible'];
         $status_class = ($stock > 0) ? 'available' : 'sold-out';
         $status_text = ($stock > 0) ? 'DISPONIBLE (' . $stock . ' en stock)' : 'AGOTADO';
-      ?>
+        ?>
         <figure>
           <img src="<?php echo htmlspecialchars($product['imagen_url']); ?>"
             alt="<?php echo htmlspecialchars($product['nombre']); ?>" />
 
           <figcaption><?php echo htmlspecialchars($product['nombre']); ?></figcaption>
-          <p><?php echo htmlspecialchars($product['descripcion'] ?? 'Sin descripción.'); ?></p>
+          <p><?php echo htmlspecialchars($product['descripcion'] ?? ''); ?></p>
           <p>Precio: <strong><?php echo htmlspecialchars($product['precio']); ?>$</strong></p>
 
           <?php if ($user_rol === 'administrador'): ?>
-
             <form action="../php/controllers/ProductController.php" method="POST" class="admin-controls">
               <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-
               <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-
               <label style="font-size: 0.8rem;">Stock Físico Total:</label>
-              <input type="number" name="new_stock" value="<?php echo $product['stock_actual']; ?>" min="0" style="width: 60px;">
-
+              <input type="number" name="new_stock" value="<?php echo $product['stock_actual']; ?>" min="0"
+                style="width: 60px;">
               <div style="margin-top: 5px;">
                 <button type="submit" name="action" value="update_stock" class="btn admin-btn">Actualizar</button>
-                <button type="submit" name="action" value="delete_product" class="btn admin-btn delete-btn" onclick="return confirm('¿Seguro que deseas eliminar este producto?');">Eliminar</button>
+                <button type="submit" name="action" value="delete_product" class="btn admin-btn delete-btn"
+                  onclick="return confirm('¿Seguro que deseas eliminar este producto?');">Eliminar</button>
               </div>
             </form>
-
           <?php else: ?>
-
             <form action="../php/controllers/ProductController.php" method="POST">
               <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-
               <input type="hidden" name="action" value="add_to_cart">
               <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-
               <?php if ($user_logged_in): ?>
-                <input type="number" name="quantity" value="1" min="1" max="<?php echo $stock; ?>"
-                  <?php echo ($stock <= 0) ? 'disabled' : ''; ?> style="width: 50px; text-align: center;">
-
-                <button type="submit" class="btn" <?php echo ($stock <= 0) ? 'disabled' : ''; ?>>
-                  Reservar
-                </button>
+                <input type="number" name="quantity" value="1" min="1" max="<?php echo $stock; ?>" <?php echo ($stock <= 0) ? 'disabled' : ''; ?> style="width: 50px; text-align: center;">
+                <button type="submit" class="btn" <?php echo ($stock <= 0) ? 'disabled' : ''; ?>>Reservar</button>
               <?php else: ?>
-                <a href="./login.php" class="btn">Reservar</a>
+                <a href="./login.php" class="btn">Iniciar Sesión para Reservar</a>
               <?php endif; ?>
             </form>
-
           <?php endif; ?>
-          <h3 class="status <?php echo $status_class; ?>">
-            <?php echo $status_text; ?>
-          </h3>
+
+          <h3 class="status <?php echo $status_class; ?>"><?php echo $status_text; ?></h3>
         </figure>
       <?php endforeach; ?>
-
     </section>
 
     <h2 id="testimonio-pepon">Testimonios de Pasantía</h2>
     <section id="testimonios" class="testimonial-container">
-
       <section class="testimonial-card">
-        <blockquote>
-          "Mi tiempo aquí fue una experiencia de aprendizaje increíble. Pude aplicar mis conocimientos de desarrollo web
-          en un proyecto real y el equipo siempre estuvo dispuesto a ayudar."
-        </blockquote>
+        <blockquote>"Mi tiempo aquí fue una experiencia de aprendizaje increíble."</blockquote>
         <section class="testimonial-author">
           <p class="author-name">Jose Correa</p>
-          <p class="author-role">Pasante de Desarrollo Web</p>
+          <p class="author-role">Pasante</p>
         </section>
       </section>
-
       <section class="testimonial-card">
-        <blockquote>
-          "El ambiente de trabajo en Lubriken C.A. es excelente. Aprendí no solo sobre bases de datos y PHP, sino
-          también sobre metodologías de trabajo y buenas prácticas en la industria."
-        </blockquote>
+        <blockquote>"El ambiente de trabajo es excelente."</blockquote>
         <section class="testimonial-author">
           <p class="author-name">Jonathan Campos</p>
-          <p class="author-role">Pasante de Ingeniería de Software</p>
+          <p class="author-role">Pasante</p>
         </section>
       </section>
-
-      <section class="testimonial-card">
-        <blockquote>
-          "Una pasantía muy completa. Pude participar en el análisis de requerimientos, diseño de la base de datos y
-          desarrollo del backend. 100% recomendada."
-        </blockquote>
-        <section class="testimonial-author">
-          <p class="author-name">Andres Jatar</p>
-          <p class="author-role">Pasante de Backend</p>
-        </section>
-      </section>
-
-      <section class="testimonial-card">
-        <blockquote>
-          "Fue una gran oportunidad para aplicar lo aprendido en la universidad. Participé activamente en el desarrollo
-          de un nuevo módulo, desde el diseño de la interfaz con HTML y CSS hasta la implementación de la lógica del
-          negocio en el backend. Aprendí muchísimo sobre control de versiones."
-        </blockquote>
-        <section class="testimonial-author">
-          <p class="author-name">Kevyn Camacaro (The special one)</p>
-          <p class="author-role">Pasante de Backend</p>
-        </section>
-      </section>
-
-      <section class="testimonial-card">
-        <blockquote>
-          ""La pasantía superó mis expectativas. Pude trabajar directamente con PHP y MySQL en el sistema principal,
-          optimizando consultas y aprendiendo sobre seguridad web. El equipo siempre estuvo dispuesto a guiarme y
-          resolvió todas mis dudas."
-        </blockquote>
-        <section class="testimonial-author">
-          <p class="author-name">Juan Pereira</p>
-          <p class="author-role">Pasante de Backend</p>
-        </section>
-      </section>
-
     </section>
-    <!--Preguntas frecuentes-->
+
     <h3 class="faq-title">Preguntas Frecuentes</h3>
     <section id="preguntas" class="preguntas">
       <article class="pregunta-card">
-        <h4>¿Donde estan ubicados? C.A</h4>
-        <p>Urbanización Los Crepusculos, Barquisimeto 3001, Lara</p>
+        <h4>¿Dónde están ubicados?</h4>
+        <p>Urbanización Los Crepusculos, Barquisimeto 3001, Lara.</p>
       </article>
-
-      <article class="pregunta-card">
-        <h4>¿Cuales son sus horarios de atencion? C.A</h4>
-        <p>Lunes a Viernes de 8:00 am a 5:00 pm</p>
-      </article>
-
-      <article class="pregunta-card">
-        <h4>¿Realizan envios a domicilio? C.A</h4>
-        <p>Por ahora no realizamos envio a domicilio.</p>
-      </article>
-
-      <article class="pregunta-card">
-        <h4>¿Cuales son sus metodos de pago? C.A</h4>
-        <p>Aceptamos pagos en efectivo y transferencias bancarias.</p>
-      </article>
-
     </section>
-    <!--Preguntas frecuentes-->
+
     <section id="formulario-contacto" class="container-form">
       <h2 class="container-form__title">Formulario de contacto</h2>
+
       <form class="container-form__form" action="" method="POST">
 
         <div class="container-form__div">
           <label for="nombre_contacto">Nombre</label>
-          <input class="container-form__campo" type="text" id="nombre_contacto" placeholder="Nombre">
+          <input type="text" id="nombre_contacto" name="nombre_contacto" placeholder="Nombre">
         </div>
 
         <div class="container-form__div">
           <label for="numero_contacto">Numero</label>
-          <input class="container-form__campo" type="number" id="numero_contacto" placeholder="Numero" min="1">
+          <input type="number" id="numero_contacto" name="numero_contacto" placeholder="Numero" min="1">
         </div>
 
         <div class="container-form__div">
           <label for="correo_contacto">Correo</label>
-          <input class="container-form__campo" type="email" id="correo_contacto" placeholder="Correo">
+          <input type="email" id="correo_contacto" name="correo_contacto" placeholder="Correo">
         </div>
 
         <div class="container-form__div">
           <label for="mensaje_contacto">Mensaje</label>
-          <textarea class="container-form__campo" name="mensaje_contacto" id="mensaje_contacto" placeholder="Deja un mensaje"></textarea>
+          <textarea name="mensaje_contacto" id="mensaje_contacto" placeholder="Deja un mensaje"></textarea>
         </div>
 
-        <div class="container-form__div container-form__submit alinear-derecha">
+        <div class="container-form__submit alinear-derecha">
           <button type="submit">Enviar</button>
         </div>
+
       </form>
+    </section>
 
   </main>
 
@@ -417,18 +363,7 @@ $csrf_token = SecurityHelper::getCsrfToken();
   </footer>
   <script src="../js/header-component.js"></script>
   <script src="../js/theme.js"></script>
-  <script>
-    function toggleMobileCart(e) {
-      // Solo aplica si estamos en vista móvil (menor a 768px)
-      if (window.innerWidth <= 768) {
-        e.preventDefault(); // Evita ir a carrito.php
-
-        // Busca el contenedor padre y le pone la clase 'active-cart'
-        const container = e.currentTarget.closest('.cart-icon-container');
-        container.classList.toggle('active-cart');
-      }
-    }
-  </script>
+  <script src="../js/dashboard.js"></script>
 </body>
 
 </html>

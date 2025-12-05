@@ -1,9 +1,7 @@
 <?php
 // src/php/controllers/ProductController.php
 session_start();
-require_once '../../../src/php/requires_central.php'; 
-require_once '../models/ProductModel.php';
-require_once '../models/CartModel.php';
+require_once '../../../src/php/requires_central.php';
 
 class ProductController
 {
@@ -19,7 +17,7 @@ class ProductController
     // ----------------------------------------------------
     // ACCIONES DE CLIENTE
     // ----------------------------------------------------
-    
+
     /**
      * Maneja la adición de un producto al carrito, actualizando el stock comprometido.
      */
@@ -46,18 +44,18 @@ class ProductController
         // 3. Validación avanzada de Stock (Controlador)
         // El stock disponible es stock_actual - stock_comprometido
         $product_data = $this->productModel->getProductById($productId);
-        
+
         if (is_string($product_data)) {
             $_SESSION['cart_error'] = "Error de sistema al verificar producto.";
             header("Location: ../../views/dashboard.php#productos");
             exit;
         }
-        
+
         // Calcular el stock disponible
         $stock_disponible = $product_data['stock_actual'] - $product_data['stock_comprometido'];
-        
+
         if (!$product_data || $stock_disponible < $quantity) {
-             $_SESSION['cart_error'] = "Stock insuficiente para la reserva solicitada.";
+            $_SESSION['cart_error'] = "Stock insuficiente para la reserva solicitada.";
             header("Location: ../../views/dashboard.php#productos");
             exit;
         }
@@ -65,7 +63,7 @@ class ProductController
         // 4. Llamar a la lógica de reserva del Modelo
         // El método addItem ahora incrementa stock_comprometido en lugar de deducir stock_actual.
         $result = $this->cartModel->addItem($userId, $productId, $quantity, $this->productModel);
-        
+
         if ($result === true) {
             $_SESSION['cart_success'] = "¡Producto añadido a la reserva! Stock apartado.";
             header("Location: ../../views/dashboard.php");
@@ -73,41 +71,79 @@ class ProductController
         }
 
         // 5. Fracaso (Error de Stock o DB devuelto por el Modelo)
-        $_SESSION['cart_error'] = $result; 
+        $_SESSION['cart_error'] = $result;
         header("Location: ../../views/dashboard.php");
         exit;
     }
 
-    private function handleRemoveItem() 
+    private function handleRemoveItem()
     {
-        // NOTA: Requiere la implementación de CartModel::removeItem
-        if (!isset($_SESSION['user_id']) || ($_SESSION['user_rol'] ?? 'cliente') === 'administrador') { header("Location: ../../views/login.php"); exit; }
-
-        $userId = $_SESSION['user_id'];
-        $productId = filter_input(INPUT_POST, 'product_id', FILTER_VALIDATE_INT);
-        
-        if (!$productId) {
-            $_SESSION['cart_error'] = "Producto inválido para eliminar.";
-            header("Location: ../../views/carrito.php");
+        // 1. Guardia de Seguridad
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: ../../views/login.php");
             exit;
         }
 
-        // El método removeItem debe liberar el stock comprometido.
+        // 2. Protección CSRF (Recomendado)
+        // if (!SecurityHelper::verifyCsrfToken($_POST['csrf_token'] ?? '')) { ... }
+
+        $userId = $_SESSION['user_id'];
+        $productId = filter_input(INPUT_POST, 'product_id', FILTER_VALIDATE_INT);
+
+        if (!$productId) {
+            $_SESSION['cart_error'] = "Producto inválido para eliminar.";
+            // Redirigir de vuelta a la pestaña del carrito
+            header("Location: ../../views/userdata.php?tab=cart");
+            exit;
+        }
+
+        // 3. Llamar al Modelo
         $result = $this->cartModel->removeItem($userId, $productId, $this->productModel);
-        
+
         if ($result === true) {
             $_SESSION['cart_success'] = "Producto eliminado de la reserva.";
         } else {
             $_SESSION['cart_error'] = $result;
         }
-        header("Location: ../../views/carrito.php");
+
+        // 4. Redirigir siempre a la pestaña del carrito
+        header("Location: ../../views/userdata.php?tab=cart");
         exit;
     }
 
-    private function handleUpdateQuantity() 
+    private function handleUpdateQuantity()
     {
-        // NOTA: Requiere la implementación de CartModel::updateQuantity
-        // Lógica similar a removeItem pero ajustando la diferencia de stock comprometido.
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: ../../views/login.php");
+            exit;
+        }
+
+        // Validar CSRF
+        $token = $_POST['csrf_token'] ?? '';
+        if (!SecurityHelper::verifyCsrfToken($token))
+            die("Error CSRF en UpdateQuantity");
+
+        $userId = $_SESSION['user_id'];
+        $productId = filter_input(INPUT_POST, 'product_id', FILTER_VALIDATE_INT);
+        $newQuantity = filter_input(INPUT_POST, 'new_quantity', FILTER_VALIDATE_INT);
+
+        // Validación estricta
+        if (!$productId || $newQuantity === false || $newQuantity < 1) {
+            $_SESSION['cart_error'] = "Cantidad inválida (debe ser mayor a 0).";
+            header("Location: ../../views/userdata.php?tab=cart");
+            exit;
+        }
+
+        // Llamada al modelo
+        $result = $this->cartModel->updateQuantity($userId, $productId, $newQuantity, $this->productModel);
+
+        if ($result === true) {
+            $_SESSION['cart_success'] = "Cantidad actualizada correctamente.";
+        } else {
+            $_SESSION['cart_error'] = $result; // Muestra el error del modelo (ej. stock insuficiente)
+        }
+        header("Location: ../../views/userdata.php?tab=cart");
+        exit;
     }
 
 
@@ -122,7 +158,7 @@ class ProductController
             exit;
         }
     }
-    
+
     private function handleUpdateStock()
     {
         $this->checkAdminAccess();
@@ -138,7 +174,7 @@ class ProductController
 
         // NUEVA REGLA: El administrador actualiza el stock_actual (físico).
         $result = $this->productModel->updateStockDirect($productId, $newStock);
-        
+
         if ($result === true) {
             $_SESSION['cart_success'] = "Stock actualizado con éxito.";
         } else {
@@ -208,9 +244,9 @@ class ProductController
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // 1. Conexión a la base de datos
     require_once '../../../src/php/requires_central.php';
-    
+
     $db = new Database();
-    $connection = $db->getConnection(); 
+    $connection = $db->getConnection();
 
     // 2. Instanciación de Modelos e Inyección de Dependencia
     $productModel = new ProductModel($connection);

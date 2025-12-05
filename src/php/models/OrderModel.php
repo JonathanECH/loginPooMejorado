@@ -18,8 +18,10 @@ class OrderModel extends DbModel
         $cartModel = new CartModel($this->conn);
         $cartItems = $cartModel->viewCart($userId);
 
-        if (is_string($cartItems)) return $cartItems;
-        if (empty($cartItems)) return "El carrito está vacío.";
+        if (is_string($cartItems))
+            return $cartItems;
+        if (empty($cartItems))
+            return "El carrito está vacío.";
 
         // 1. Calcular Total
         $total = 0;
@@ -31,7 +33,8 @@ class OrderModel extends DbModel
         $sql_order = "INSERT INTO pedidos (user_id, total, estado) VALUES (?, ?, 'pendiente')";
         $orderId = $this->runDmlStatement($sql_order, "id", $userId, $total); // id = int, decimal
 
-        if (is_string($orderId)) return "Error al crear orden: " . $orderId;
+        if (is_string($orderId))
+            return "Error al crear orden: " . $orderId;
         $orderId = $this->conn->insert_id;
 
         // 3. Mover ítems de Detalles Carrito a Detalles Pedido
@@ -61,11 +64,12 @@ class OrderModel extends DbModel
                 JOIN usuarios u ON p.user_id = u.id 
                 WHERE p.estado = 'pendiente' 
                 ORDER BY p.fecha_solicitud ASC";
-        
+
         $result = $this->runSelectStatement($sql, "");
-        
-        if (is_string($result)) return $result;
-        
+
+        if (is_string($result))
+            return $result;
+
         $orders = [];
         while ($row = $result->fetch_assoc()) {
             $orders[] = $row;
@@ -84,18 +88,35 @@ class OrderModel extends DbModel
         $sql_items = "SELECT producto_id, cantidad FROM detalles_pedido WHERE pedido_id = ?";
         $result = $this->runSelectStatement($sql_items, "i", $orderId);
 
-        if (is_string($result)) return $result;
+        if (is_string($result))
+            return $result;
 
         // 2. Procesar Stock Final
         while ($item = $result->fetch_assoc()) {
             // Llamamos al método que creamos antes en ProductModel
             // Reduce stock_actual Y reduce stock_comprometido
             $res = $productModel->confirmSaleDeductStock($item['producto_id'], $item['cantidad']);
-            if (is_string($res)) return "Error en producto ID {$item['producto_id']}: $res";
+            if (is_string($res))
+                return "Error en producto ID {$item['producto_id']}: $res";
         }
 
         // 3. Marcar pedido como completado
         $sql_update = "UPDATE pedidos SET estado = 'completado' WHERE id = ?";
         return $this->runDmlStatement($sql_update, "i", $orderId);
+    }
+
+    public function getOrdersByUserId(int $userId): array|string
+    {
+        $sql = "SELECT * FROM pedidos WHERE user_id = ? ORDER BY fecha_solicitud DESC";
+        $result = $this->runSelectStatement($sql, "i", $userId);
+
+        if (is_string($result))
+            return $result;
+
+        $orders = [];
+        while ($row = $result->fetch_assoc()) {
+            $orders[] = $row;
+        }
+        return $orders;
     }
 }
