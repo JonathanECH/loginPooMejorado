@@ -313,3 +313,42 @@ table.data-table td, table.orders-table td {
         white-space: nowrap;
     }
 }
+
+/* En src/styles/css/userdatastyles.css */
+
+/* Contenedor flexible para los botones */
+.action-buttons-wrapper {
+    display: flex;
+    gap: 8px; /* Espacio entre botones */
+    justify-content: center; /* Centrados horizontalmente */
+    align-items: center;
+}
+
+/* Estilo unificado para botones de acción (iconos) */
+.btn-action {
+    width: 35px;
+    height: 35px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.btn-success {
+    background-color: #27ae60;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-action:hover {
+    transform: scale(1.1); /* Efecto zoom al pasar el mouse */
+    opacity: 0.9;
+}

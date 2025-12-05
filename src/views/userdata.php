@@ -310,22 +310,25 @@ unset($_SESSION['update_error'], $_SESSION['cart_success'], $_SESSION['cart_erro
                                         </span>
                                     </td>
                                     <?php if ($user_rol === 'administrador'): ?>
-                                        <td>
-                                            <form action="../php/controllers/OrderController.php" method="POST"
-                                                onsubmit="return confirm('¿Confirmar pago? Esto descontará el stock físico.');">
-                                                <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                                                <input type="hidden" name="action" value="confirm_order">
-                                                <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
-                                                <button type="submit" class="btn-action btn-success">Confirmar</button>
-                                            </form>
-                                            <form action="../php/controllers/OrderController.php" method="POST"
-                                                onsubmit="return confirm('¿Rechazar pedido? El stock volverá a estar disponible.');">
-                                                <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                                                <input type="hidden" name="action" value="cancel_order">
-                                                <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
-                                                <button type="submit" class="btn-action btn-danger"
-                                                    title="Rechazar/Cancelar">❌</button>
-                                            </form>
+                                        <td class="actions-cell">
+                                            <div class="action-buttons-wrapper">
+                                                <form action="../php/controllers/OrderController.php" method="POST"
+                                                    onsubmit="return confirm('¿Confirmar pago?');">
+                                                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                                                    <input type="hidden" name="action" value="confirm_order">
+                                                    <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                                                    <button type="submit" class="btn-action btn-success"
+                                                        title="Confirmar">✅</button>
+                                                </form>
+
+                                                <form action="../php/controllers/OrderController.php" method="POST"
+                                                    onsubmit="return confirm('¿Rechazar pedido?');">
+                                                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                                                    <input type="hidden" name="action" value="cancel_order">
+                                                    <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                                                    <button type="submit" class="btn-action btn-danger" title="Rechazar">❌</button>
+                                                </form>
+                                            </div>
                                         </td>
                                     <?php endif; ?>
                                 </tr>
