@@ -3,13 +3,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const mobileMenuBtn = document.getElementById("mobile-menu-btn");
   const mobileMenu = document.getElementById("mobile-menu");
   
-  // CAMBIO CLAVE: Usamos '>' para seleccionar solo los hijos directos del menú
-  // Así evitamos seleccionar los 'li' de los productos dentro del carrito por accidente.
   const menuMobileLists = document.querySelectorAll("#mobile-menu > ul > li");
   
   let isActive = false;
+  let isAnimating = false; // 🔒 NUEVA VARIABLE DE BLOQUEO
 
-  // Eventos de Scroll
+  // Eventos de Scroll (Se mantienen igual)
   window.addEventListener("scroll", () => (mobileMenuBtn.style.opacity = ".5"));
   window.addEventListener("scrollend", () => {
     const currentScroll = window.scrollY || document.documentElement.scrollTop;
@@ -19,13 +18,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // CLICK DE LOS ÍTEMS DEL MENÚ MÓVIL
   menuMobileLists.forEach(item => {
-    
-    // Si es el botón del carrito, NO le agregamos el evento de cerrar.
     if (item.classList.contains("mobile-cart-trigger")) {
-        return; // Saltamos este elemento
+        return; 
     }
 
     item.addEventListener("click", function () {
+      // Si ya se está animando, ignoramos el click
+      if (isAnimating) return; 
+      
       cerrarMenuConAnimacion();
       isActive = false;
     });
@@ -33,6 +33,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // CLICK DEL BOTÓN HAMBURGUESA
   mobileMenuBtn.addEventListener("click", function () {
+    // 🔒 SI SE ESTÁ MOVIENDO, NO HACEMOS NADA
+    if (isAnimating) return;
+
     if (!isActive) {
       configurarMenu("✖", "flex", "0");
       isActive = true;
@@ -45,26 +48,44 @@ document.addEventListener("DOMContentLoaded", function () {
   // REDIMENSIONAR PANTALLA
   window.addEventListener("resize", function () {
     if (isActive) {
-      cerrarMenuConAnimacion();
+      // Forzamos el cierre sin animación para evitar bugs visuales al rotar pantalla
+      mobileMenu.style.display = "none";
+      mobileMenu.style.right = "100%";
+      mobileMenuBtn.innerHTML = "☰";
       isActive = false;
+      isAnimating = false; // Liberamos el bloqueo por si acaso
     }
   });
 
   // FUNCIONES AUXILIARES
+
   function configurarMenu(btnText, menuDisplay, menuRight) {
+    isAnimating = true; // 🔒 BLOQUEAMOS CLICKS
+    
     mobileMenuBtn.innerHTML = btnText;
     mobileMenu.style.display = menuDisplay;
+    
     requestAnimationFrame(() => {
       mobileMenu.style.right = menuRight;
     });
+
+    // Detectar cuando termina de ABRIRSE para desbloquear
+    const onOpenEnd = () => {
+        isAnimating = false; // 🔓 DESBLOQUEAMOS
+        mobileMenu.removeEventListener("transitionend", onOpenEnd);
+    };
+    mobileMenu.addEventListener("transitionend", onOpenEnd);
   }
   
   function cerrarMenuConAnimacion() {
+    isAnimating = true; // 🔒 BLOQUEAMOS CLICKS
+
     mobileMenuBtn.innerHTML = "☰";
     mobileMenu.style.right = "100%";
 
     const handleTransitionEnd = () => {
       mobileMenu.style.display = "none";
+      isAnimating = false; // 🔓 DESBLOQUEAMOS CLICKS
       mobileMenu.removeEventListener("transitionend", handleTransitionEnd);
     };
     mobileMenu.addEventListener("transitionend", handleTransitionEnd);
