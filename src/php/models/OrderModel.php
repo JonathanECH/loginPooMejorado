@@ -59,7 +59,8 @@ class OrderModel extends DbModel
      */
     public function getPendingOrders(): array|string
     {
-        $sql = "SELECT p.id, p.fecha_solicitud, p.total, u.nombre as usuario, u.email 
+        // AGREGAMOS p.estado A LA LISTA DE SELECCIÓN
+        $sql = "SELECT p.id, p.fecha_solicitud, p.total, p.estado, u.nombre as usuario, u.email 
                 FROM pedidos p 
                 JOIN usuarios u ON p.user_id = u.id 
                 WHERE p.estado = 'pendiente' 
@@ -118,5 +119,44 @@ class OrderModel extends DbModel
             $orders[] = $row;
         }
         return $orders;
+    }
+
+    /**
+     * Cancela un pedido y LIBERA el stock comprometido para que otros puedan comprarlo.
+     */
+    public function cancelOrder(int $orderId): bool|string
+    {
+        // 1. Verificar estado actual (solo cancelar si está pendiente)
+        $checkSql = "SELECT estado FROM pedidos WHERE id = ?";
+        $checkRes = $this->runSelectStatement($checkSql, "i", $orderId);
+        if (is_string($checkRes) || $checkRes->num_rows === 0)
+            return "Pedido no encontrado.";
+
+        $estado = $checkRes->fetch_assoc()['estado'];
+        if ($estado !== 'pendiente') {
+            return "Solo se pueden cancelar pedidos pendientes.";
+        }
+
+        $productModel = new ProductModel($this->conn);
+
+        // 2. Obtener productos del pedido para devolverlos al inventario disponible
+        $sql_items = "SELECT producto_id, cantidad FROM detalles_pedido WHERE pedido_id = ?";
+        $result = $this->runSelectStatement($sql_items, "i", $orderId);
+
+        if (is_string($result))
+            return $result;
+
+        // 3. Liberar el Stock Comprometido (Restarlo del comprometido)
+        while ($item = $result->fetch_assoc()) {
+            // Usamos cantidad negativa para LIBERAR
+            // manipulateCompromisedStock(-cantidad) reduce la reserva
+            $res = $productModel->manipulateCompromisedStock($item['producto_id'], -$item['cantidad']);
+            if (is_string($res))
+                return "Error al liberar stock: $res";
+        }
+
+        // 4. Cambiar estado a Cancelado
+        $sql_update = "UPDATE pedidos SET estado = 'cancelado' WHERE id = ?";
+        return $this->runDmlStatement($sql_update, "i", $orderId);
     }
 }

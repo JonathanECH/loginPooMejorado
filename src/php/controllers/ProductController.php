@@ -184,31 +184,39 @@ class ProductController
         exit;
     }
 
+    // En src/php/controllers/ProductController.php
+
     private function handleDeleteProduct()
     {
         $this->checkAdminAccess();
 
+        // Verificación CSRF
+        $token = $_POST['csrf_token'] ?? '';
+        if (!SecurityHelper::verifyCsrfToken($token)) {
+            die("Error de seguridad: Token CSRF inválido.");
+        }
+
         $productId = filter_input(INPUT_POST, 'product_id', FILTER_VALIDATE_INT);
 
         if (!$productId) {
-            $_SESSION['update_error'] = "ID de producto inválido para eliminar.";
-            header("Location: ../../views/dashboard.php");
+            $_SESSION['update_error'] = "ID de producto inválido.";
+            header("Location: ../../views/dashboard.php#productos");
             exit;
         }
 
-        // NOTA: La lógica de eliminación DEBE primero verificar si hay stock comprometido.
         $result = $this->productModel->deleteProduct($productId);
 
-        if ($result === true) {
-            $_SESSION['cart_success'] = "Producto eliminado con éxito.";
+        // CORRECCIÓN AQUÍ: Aceptamos true O un número mayor a 0
+        if ($result === true || (is_int($result) && $result > 0)) {
+            $_SESSION['cart_success'] = "Producto eliminado correctamente.";
         } else {
-            $_SESSION['update_error'] = $result; // Captura el mensaje de error de reserva activa
+            // Si es string, es el error. Si es 0, es que no se pudo borrar.
+            $_SESSION['update_error'] = is_string($result) ? $result : "No se pudo eliminar el producto (quizás tiene reservas activas).";
         }
-        header("Location: ../../views/dashboard.php");
+
+        header("Location: ../../views/dashboard.php#productos");
         exit;
     }
-
-
     // ----------------------------------------------------
     // ENRUTAMIENTO FINAL
     // ----------------------------------------------------
