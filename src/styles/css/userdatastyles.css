@@ -326,7 +326,6 @@ table.data-table td, table.orders-table td {
 
 /* Estilo unificado para botones de acción (iconos) */
 .btn-action {
-    width: 35px;
     height: 35px;
     border-radius: 6px;
     border: none;

@@ -4,6 +4,8 @@ session_start();
 
 // 1. INCLUSIÓN DE DEPENDENCIAS
 require_once '../php/requires_central.php';
+// AGREGA ESTO AQUÍ:
+require_once '../php/services/ThemeHelper.php';
 
 // 2. SETUP DE CONEXIÓN E INYECCIÓN
 $db = new Database();
@@ -61,7 +63,12 @@ $csrf_token = SecurityHelper::getCsrfToken();
   <link rel="stylesheet" id="sobrenosotros-style" href="../styles/css/section-sobrenosotros.css">
   <link rel="stylesheet" href="../styles/css/preguntas.css">
   <link rel="stylesheet" href="../styles/css/ContactForm.css">
+    
   <title>Dashboard - Lubriken</title>
+  <?php 
+  // Asumiendo que $connection ya existe en la vista
+        ThemeHelper::renderThemeStyles($connection); 
+    ?>
 </head>
 
 <body>
