@@ -274,7 +274,7 @@ unset($_SESSION['update_error'], $_SESSION['cart_success'], $_SESSION['cart_erro
                                     <?php endif; ?>
                                     <td>$<?php echo number_format($order['total'], 2); ?></td>
                                     <td>
-                                        <span style="padding:4px 8px; border-radius:4px; background:#f1c40f; color:#fff; font-weight:bold;">
+                                        <span style="color:#f1c40f; font-weight:bold;">
                                             <?php echo isset($order['estado']) ? ucfirst($order['estado']) : 'Desconocido'; ?>
                                         </span>
                                     </td>
@@ -337,10 +337,11 @@ unset($_SESSION['update_error'], $_SESSION['cart_success'], $_SESSION['cart_erro
                                         <input type="color" name="bg_color" value="<?php echo $currentColors['bg_color']; ?>" style="width:50px; height:50px; cursor:pointer; border:none;">
                                     </div>
                                 </div>
+                                
                                 <div class="form-group">
                                     <label>Color de Tarjetas (Productos/Cajas)</label>
                                     <div style="display:flex; align-items:center; gap:10px;">
-                                        <input type="color" name="card_color" value="<?php echo $currentColors['card_color'] ?? '#ffffff'; ?>" style="width:50px; height:50px; cursor:pointer; border:none;">
+                                        <input type="color" name="card_color" value="<?php echo $currentColors['card_color']; ?>" style="width:50px; height:50px; cursor:pointer; border:none;">
                                     </div>
                                 </div>
                             </div>

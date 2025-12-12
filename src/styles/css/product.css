@@ -110,6 +110,23 @@
 .productos .status.available { color: #28a745; }
 .productos .status.sold-out { color: #dc3545; }
 
+/* ESTILO PARA BOTONES DESACTIVADOS (SIN STOCK) */
+.productos .btn:disabled,
+.productos .btn[disabled] {
+    background-color: #cccccc !important; /* Gris claro */
+    color: #666666 !important;            /* Texto gris oscuro */
+    cursor: not-allowed;                  /* Cursor de prohibido */
+    transform: none !important;           /* Sin efecto de movimiento */
+    box-shadow: none !important;          /* Sin sombra */
+    opacity: 0.8;
+}
+
+/* En modo oscuro, el gris debe ser más oscuro para no encandilar */
+body.dark-mode .productos .btn:disabled {
+    background-color: #444444 !important;
+    color: #aaaaaa !important;
+}
+
 /* Título de la sección */
 .productos-title {
     grid-column: 1 / -1; /* Ocupa todo el ancho */

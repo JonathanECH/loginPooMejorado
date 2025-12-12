@@ -63,12 +63,12 @@ $csrf_token = SecurityHelper::getCsrfToken();
   <link rel="stylesheet" id="sobrenosotros-style" href="../styles/css/section-sobrenosotros.css">
   <link rel="stylesheet" href="../styles/css/preguntas.css">
   <link rel="stylesheet" href="../styles/css/ContactForm.css">
-    
+
   <title>Dashboard - Lubriken</title>
-  <?php 
+  <?php
   // Asumiendo que $connection ya existe en la vista
-        ThemeHelper::renderThemeStyles($connection); 
-    ?>
+  ThemeHelper::renderThemeStyles($connection);
+  ?>
 </head>
 
 <body>
@@ -155,8 +155,8 @@ $csrf_token = SecurityHelper::getCsrfToken();
                 <span class="cart-badge"><?php echo $total_items_in_cart; ?></span>
               <?php endif; ?>
             </a>
-            
-            </li>
+
+          </li>
         <?php endif; ?>
 
         <?php if (isset($_SESSION['usuario'])): ?>
@@ -176,13 +176,13 @@ $csrf_token = SecurityHelper::getCsrfToken();
   </header>
 
   <main>
-    <?php if ($user_logged_in): ?>
+    <!-- <?php if ($user_logged_in): ?>
       <form action="../php/controllers/UserController.php" method="POST" style="text-align: right; padding: 10px;">
         <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
         <input type="hidden" name="action" value="logout">
         <button type="submit" class="logout-btn">Cerrar Sesión</button>
       </form>
-    <?php endif; ?>
+    <?php endif; ?> -->
 
     <?php if ($update_error_message): ?>
       <div class="errorMsg" style="color: red; padding: 10px; text-align:center; border: 1px solid red; margin: 10px;">
@@ -260,7 +260,11 @@ $csrf_token = SecurityHelper::getCsrfToken();
                   Reservar
                 </button>
               <?php else: ?>
-                <a href="./login.php" class="btn">Reservar</a>
+                <?php if ($stock > 0): ?>
+                  <a href="./login.php" class="btn">Reservar</a>
+                <?php else: ?>
+                  <button class="btn" disabled>Agotado</button>
+                <?php endif; ?>
               <?php endif; ?>
             </form>
 
